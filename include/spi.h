@@ -20,20 +20,17 @@
     WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
     DEALINGS IN THE SOFTWARE.
-
-    $Id$
 */
 
-#ifndef _SPI_H_
-#define _SPI_H_
+#ifndef _AVR_SPI_H_
+#define _AVR_SPI_H_
 
 #include <avr/io.h>
-
+#include <avr/interrupt.h>
 
 extern void spi_init();
 extern void spi_transfer_sync (uint8_t * dataout, uint8_t * datain, uint8_t len);
 extern void spi_transmit_sync (uint8_t * dataout, uint8_t len);
 extern uint8_t spi_fast_shift (uint8_t data);
 
-
-#endif /* _SPI_H_ */
+#endif /* _AVR_SPI_H_ */
