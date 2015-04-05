@@ -37,8 +37,7 @@ DUDE_OPTIONS = \
 
 ## projects for arduino-mini
 
-list:
-	@echo "led uart"
+TARGETS = "led uart"
 
 ifeq ($(MAKECMDGOALS), led)
 include $(PRJ_DIR)/boards/$(PLAT)/apps/led/build.mk

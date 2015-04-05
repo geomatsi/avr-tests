@@ -37,8 +37,7 @@ DUDE_OPTIONS = \
 
 ## projects for devduino2
 
-list:
-	@echo "led uart"
+TARGETS = "led uart"
 
 ifeq ($(MAKECMDGOALS), led)
 include $(PRJ_DIR)/boards/$(PLAT)/apps/led/build.mk
