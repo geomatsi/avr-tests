@@ -38,7 +38,7 @@ include $(PRJ_DIR)/boards/$(PLAT)/platform.mk
 deps: libnrf24
 
 libnrf24:
-	make -C libnrf24 CROSS_COMPILE=$(CROSS_COMPILE) ARCH=$(ARCH) PLAT=$(PLAT) PFLAGS=$(PFLAGS)
+	make -C libnrf24 CROSS_COMPILE=$(CROSS_COMPILE) ARCH=$(ARCH) PLAT=$(PLAT) PFLAGS="$(PFLAGS)"
 
 ## clean rules
 
@@ -46,7 +46,7 @@ clean:
 	rm -rf $(OBJ_DIR)
 
 distclean:
-	make -C libnrf24 CROSS_COMPILE=$(CROSS_COMPILE) ARCH=$(ARCH) PLAT=$(PLAT) PFLAGS=$(PFLAGS) clean
+	make -C libnrf24 CROSS_COMPILE=$(CROSS_COMPILE) ARCH=$(ARCH) PLAT=$(PLAT) PFLAGS="$(PFLAGS)" clean
 	rm -rf $(OBJ_DIR)
 
 .PHONY: libnrf24
