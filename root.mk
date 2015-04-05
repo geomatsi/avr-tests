@@ -12,6 +12,15 @@ PLAT ?= devduino2
 OBJ_DIR = $(shell pwd)/out
 PRJ_DIR = $(shell pwd)/tests
 
+## default build target: print info
+
+all: info
+
+info:
+	@echo "ARCH = $(ARCH)"
+	@echo "PLAT = $(PLAT)"
+	@echo "BUILD TARGETS = $(TARGETS)"
+
 ## dependencies
 
 # libnrf24
@@ -23,12 +32,6 @@ CFLAGS			+= -I$(NRF24_LIB_DIR)/include
 ## target specific definitions
 
 include $(PRJ_DIR)/boards/$(PLAT)/platform.mk
-
-## info rules
-
-info:
-	@echo "ARCH = $(ARCH)"
-	@echo "PLAT = $(PLAT)"
 
 ## build rules for dependencies
 
