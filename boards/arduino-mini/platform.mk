@@ -50,4 +50,4 @@ endif
 ## upload rules
 
 upload:
-	avrdude $(DUDE_OPTIONS) -U flash:w:firmware.hex
+	avrdude $(DUDE_OPTIONS) -U flash:w:out/firmware.hex
