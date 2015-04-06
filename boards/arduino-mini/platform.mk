@@ -17,10 +17,10 @@ OBJDUMP	= $(CROSS_COMPILE)-objdump
 
 ## platform compile flags
 
-MCU_TARGET	= atmega168
+CHIP		= atmega168
 CLK_FREQ    = 16000000L
 
-PFLAGS = -mmcu=$(MCU_TARGET) -DF_CPU=$(CLK_FREQ)
+PFLAGS = -mmcu=$(CHIP) -DF_CPU=$(CLK_FREQ)
 
 ## platform flash flags
 
@@ -29,7 +29,7 @@ PROGRAMMER	= arduino
 BAUDRATE	= 19200
 
 DUDE_OPTIONS = \
-	-p $(MCU_TARGET)	\
+	-p $(CHIP)	\
 	-P $(SERIAL_PORT)	\
 	-c $(PROGRAMMER)	\
 	-b $(BAUDRATE)		\

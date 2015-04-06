@@ -25,9 +25,9 @@ info:
 
 # libnrf24
 
-LIBNRF24		= $(NRF24_LIB_DIR)/libnrf24_$(ARCH)_$(PLAT).a
 NRF24_LIB_DIR	= libnrf24
-CFLAGS			+= -I$(NRF24_LIB_DIR)/include
+LIBNRF24_INC	= -I$(NRF24_LIB_DIR)/include
+LIBNRF24		= $(NRF24_LIB_DIR)/libnrf24_$(CHIP).a
 
 ## target specific definitions
 
@@ -38,7 +38,10 @@ include $(PRJ_DIR)/boards/$(PLAT)/platform.mk
 deps: libnrf24
 
 libnrf24:
-	make -C libnrf24 CROSS_COMPILE=$(CROSS_COMPILE) ARCH=$(ARCH) PLAT=$(PLAT) PFLAGS="$(PFLAGS)"
+	make -C libnrf24 \
+		CROSS_COMPILE=$(CROSS_COMPILE) \
+		TARGET=$(CHIP) \
+		PLT_FLAGS="$(PFLAGS)"
 
 ## clean rules
 
@@ -46,7 +49,7 @@ clean:
 	rm -rf $(OBJ_DIR)
 
 distclean:
-	make -C libnrf24 CROSS_COMPILE=$(CROSS_COMPILE) ARCH=$(ARCH) PLAT=$(PLAT) PFLAGS="$(PFLAGS)" clean
+	make -C libnrf24 CROSS_COMPILE=$(CROSS_COMPILE) TARGET=$(CHIP) PLT_FLAGS="$(PFLAGS)" clean
 	rm -rf $(OBJ_DIR)
 
 .PHONY: libnrf24
