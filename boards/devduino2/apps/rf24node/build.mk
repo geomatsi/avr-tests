@@ -5,15 +5,18 @@
 ## paths
 
 VPATH += $(PRJ_DIR)/boards/$(PLAT)/apps/rf24node
+VPATH += $(PRJ_DIR)/boards/$(PLAT)/bsp/clock
 VPATH += $(PRJ_DIR)/boards/$(PLAT)/bsp/spi
-VPATH += $(PRJ_DIR)/drivers/spi
 
 ## sources
 
 NODE_SRCS := \
-	main.c \
-	uart.c \
-	led.c
+	main.c	\
+	uart.c	\
+	led.c	\
+	spi.c	\
+	clock.c	\
+	radio.c
 
 NODE_OBJS := $(NODE_SRCS:.c=.o)
 NODE_OBJS := $(addprefix $(OBJ_DIR)/,$(NODE_OBJS))
@@ -28,6 +31,7 @@ CFLAGS	= -Wall -O2 $(PFLAGS)
 
 CFLAGS	+= -I$(PRJ_DIR)/include
 CFLAGS	+= -I$(PRJ_DIR)/boards/$(PLAT)/apps/rf24node
+CFLAGS	+= $(LIBNRF24_INC)
 
 LDFLAGS	= -Wl,-Map,$(PRG).map
 
