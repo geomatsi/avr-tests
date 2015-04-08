@@ -3,24 +3,29 @@
 
 /* rf24 pins on devduino2 */
 
-#define DD_MOSI     DDB3
-#define DD_MISO     DDB4
-#define DD_SCK      DDB5
+#define DD_CE	DDB0
+#define DD_SS	DDB2
+#define DD_MOSI	DDB3
+#define DD_MISO	DDB4
+#define DD_SCK	DDB5
 
-#define DD_CSN		DDD7
-#define DD_CE       DDB0
+#define DD_IRQ	DDD2
+#define DD_CSN	DDD7
 
 /* */
 
 void spi_init_pins(void)
 {
 	/* reset pins */
-    DDRB &= ~((1<<DD_MOSI)|(1<<DD_MISO)|(1<<DD_SCK)|(1<<DD_CE));
-    DDRD &= ~(1<<DD_CSN);
+    DDRB &= ~((1<<DD_MOSI)|(1<<DD_MISO)|(1<<DD_SCK)|(1<<DD_CE)|(1<<DD_SS));
+    DDRD &= ~((1<<DD_CSN)|(1<<DD_IRQ));
 
     /* define the following pins as output */
     DDRB |= ((1<<DD_MOSI)|(1<<DD_SCK)|(1<<DD_CE));
     DDRD |= (1<<DD_CSN);
+
+    /* NB: we have to set SS as output no matter we do not use it */
+    DDRB |= (1<<DD_SS);
 }
 
 /* */
