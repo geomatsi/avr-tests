@@ -37,11 +37,14 @@ LDFLAGS	= -Wl,-Map,$(PRG).map
 
 ## rules
 
-rf24node: $(OBJ_DIR)/rf24node.hex
+rf24node: $(OBJ_DIR)/rf24node.hex $(OBJ_DIR)/rf24node.bin
 	cp $(OBJ_DIR)/rf24node.hex $(OBJ_DIR)/firmware.hex
 
 %.hex: %.elf
 	$(OBJCOPY) -j .text -j .data -O ihex $^ $@
+
+%.bin: %.elf
+	$(OBJCOPY) -j .text -j .data -O binary $< $@
 
 $(OBJ_DIR)/rf24node.elf: $(NODE_OBJS) $(LIBS)
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(NODE_OBJS) $(LIBS)
