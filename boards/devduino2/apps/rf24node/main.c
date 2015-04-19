@@ -52,9 +52,7 @@ int main (void)
 			status = rf24_flush_tx(nrf);
 		}
 
-		led_on();
-		delay_ms(1000);
-		led_off();
+		led_toggle();
 		delay_ms(1000);
 	}
 

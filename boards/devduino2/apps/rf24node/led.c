@@ -16,3 +16,8 @@ void led_off(void)
 {
 	PORTB &= ~(1 << PB1);
 }
+
+void led_toggle(void)
+{
+	PORTB ^= (1 << PB1);
+}
