@@ -3,6 +3,7 @@
 #include <stdio.h>
 
 #include "clock.h"
+#include "vcc.h"
 
 #include "radio.h"
 #include "uart.h"
@@ -19,6 +20,7 @@ int main (void)
 
 	uint32_t count = 0;
 	uint8_t status;
+	long vcc;
 	int ret;
 
 	stdout = &uart_stream;
@@ -54,6 +56,9 @@ int main (void)
 
 		led_toggle();
 		delay_ms(1000);
+
+		vcc = read_vcc();
+		printf("... vcc = %ld\n", vcc);
 	}
 
 	return 1;

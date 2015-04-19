@@ -7,6 +7,8 @@
 VPATH += $(PRJ_DIR)/boards/$(PLAT)/apps/rf24node
 VPATH += $(PRJ_DIR)/boards/$(PLAT)/bsp/clock
 VPATH += $(PRJ_DIR)/boards/$(PLAT)/bsp/spi
+VPATH += $(PRJ_DIR)/boards/$(PLAT)/bsp/vcc
+VPATH += $(PRJ_DIR)/boards/$(PLAT)/bsp/adc
 
 ## sources
 
@@ -16,7 +18,9 @@ NODE_SRCS := \
 	led.c	\
 	spi.c	\
 	clock.c	\
-	radio.c
+	radio.c \
+	vcc.c	\
+	adc.c	\
 
 NODE_OBJS := $(NODE_SRCS:.c=.o)
 NODE_OBJS := $(addprefix $(OBJ_DIR)/,$(NODE_OBJS))
