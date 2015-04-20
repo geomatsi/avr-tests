@@ -9,6 +9,7 @@ VPATH += $(PRJ_DIR)/boards/$(PLAT)/bsp/clock
 VPATH += $(PRJ_DIR)/boards/$(PLAT)/bsp/spi
 VPATH += $(PRJ_DIR)/boards/$(PLAT)/bsp/vcc
 VPATH += $(PRJ_DIR)/boards/$(PLAT)/bsp/adc
+VPATH += $(PRJ_DIR)/boards/$(PLAT)/bsp/temp
 
 ## sources
 
@@ -21,6 +22,7 @@ NODE_SRCS := \
 	radio.c \
 	vcc.c	\
 	adc.c	\
+	temp_mcp9700.c \
 
 NODE_OBJS := $(NODE_SRCS:.c=.o)
 NODE_OBJS := $(addprefix $(OBJ_DIR)/,$(NODE_OBJS))
