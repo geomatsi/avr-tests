@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 #include "uart.h"
-#include "led.h"
+#include "leds.h"
 
 FILE uart_stream = FDEV_SETUP_STREAM(uart_putchar, NULL, _FDEV_SETUP_WRITE);
 
@@ -28,7 +28,7 @@ int main (void)
 	unsigned int i = 0;
 
 	uart_init();
-	led_init();
+	leds_init();
 
 	stdout = &uart_stream;
 	stderr = &uart_stream;
@@ -37,10 +37,10 @@ int main (void)
 
 		p = i % m;
 		printf("cycle[%u]: delay = %d\n", i++, delays[p]*10);
-		led_on();
+		led_on(0);
 		delay_10ms(delays[p]);
 
-		led_off();
+		led_off(0);
 		delay_10ms(50);
 	}
 

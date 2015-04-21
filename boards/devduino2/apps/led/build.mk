@@ -5,11 +5,13 @@
 ## paths
 
 VPATH += $(PRJ_DIR)/boards/$(PLAT)/apps/led
+VPATH += $(PRJ_DIR)/boards/$(PLAT)/bsp/leds
 
 ## sources
 
 LED_SRCS := \
-	main.c
+	main.c \
+	leds.c
 
 LED_OBJS := $(LED_SRCS:.c=.o)
 LED_OBJS := $(addprefix $(OBJ_DIR)/,$(LED_OBJS))
@@ -20,8 +22,12 @@ LIBS =
 
 ## flags
 
-override CFLAGS		= -Wall -O2 $(PFLAGS)
-override LDFLAGS	= -Wl,-Map,$(PRG).map
+CFLAGS	= -Wall -O2 $(PFLAGS)
+
+CFLAGS	+= -I$(PRJ_DIR)/include
+CFLAGS	+= -I$(PRJ_DIR)/boards/$(PLAT)/apps/led
+
+LDFLAGS	= -Wl,-Map,$(PRG).map
 
 ## rules
 

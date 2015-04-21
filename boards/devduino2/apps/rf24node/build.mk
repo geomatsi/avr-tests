@@ -6,6 +6,7 @@
 
 VPATH += $(PRJ_DIR)/boards/$(PLAT)/apps/rf24node
 VPATH += $(PRJ_DIR)/boards/$(PLAT)/bsp/clock
+VPATH += $(PRJ_DIR)/boards/$(PLAT)/bsp/leds
 VPATH += $(PRJ_DIR)/boards/$(PLAT)/bsp/spi
 VPATH += $(PRJ_DIR)/boards/$(PLAT)/bsp/vcc
 VPATH += $(PRJ_DIR)/boards/$(PLAT)/bsp/adc
@@ -16,7 +17,7 @@ VPATH += $(PRJ_DIR)/boards/$(PLAT)/bsp/temp
 NODE_SRCS := \
 	main.c	\
 	uart.c	\
-	led.c	\
+	leds.c	\
 	spi.c	\
 	clock.c	\
 	radio.c \

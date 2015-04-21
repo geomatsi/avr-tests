@@ -3,12 +3,12 @@
 #include <stdio.h>
 
 #include "clock.h"
+#include "leds.h"
 #include "vcc.h"
 #include "temp_mcp9700.h"
 
 #include "radio.h"
 #include "uart.h"
-#include "led.h"
 
 FILE uart_stream = FDEV_SETUP_STREAM(uart_putchar, NULL, _FDEV_SETUP_WRITE);
 
@@ -21,7 +21,7 @@ int main (void)
 
 	uint32_t count = 0;
 	uint8_t status;
-	long val;
+	long vcc, temp;
 	int ret;
 
 	stdout = &uart_stream;
@@ -30,7 +30,7 @@ int main (void)
 	uart_init();
 
 	printf("led_init...\n");
-	led_init();
+	leds_init();
 
 	printf("radio_init...\n");
 	nrf = radio_init();
@@ -45,8 +45,14 @@ int main (void)
 
 	while (1){
 
+		vcc = read_vcc();
+		printf("... vcc = %ld\n", vcc);
+
+		temp = read_temp_mcp9700();
+		printf("... temp = %ld\n", temp);
+
 		memset(buf, 0x0, sizeof(buf));
-		sprintf((char *) buf, "node 0x%08x", (unsigned int) count++);
+		snprintf((char *) buf, sizeof(buf) - 1, "p%u:v[%ld]t[%ld]", (unsigned int) count++, vcc, temp);
 		printf("xmit buffer: sizeof(%s) = %d\n", buf, sizeof(buf));
 
 		ret = rf24_write(nrf, buf, sizeof(buf));
@@ -55,14 +61,8 @@ int main (void)
 			status = rf24_flush_tx(nrf);
 		}
 
-		led_toggle();
+		led_toggle(0);
 		delay_ms(1000);
-
-		val = read_vcc();
-		printf("... vcc = %ld\n", val);
-
-		val = read_temp_mcp9700();
-		printf("... temp = %ld\n", val);
 	}
 
 	return 1;
