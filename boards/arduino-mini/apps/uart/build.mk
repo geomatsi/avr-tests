@@ -5,13 +5,14 @@
 ## paths
 
 VPATH += $(PRJ_DIR)/boards/$(PLAT)/apps/uart
+VPATH += $(PRJ_DIR)/boards/$(PLAT)/bsp/leds
 
 ## sources
 
 UART_SRCS := \
 	main.c \
 	uart.c \
-	led.c
+	leds.c
 
 UART_OBJS := $(UART_SRCS:.c=.o)
 UART_OBJS := $(addprefix $(OBJ_DIR)/,$(UART_OBJS))
@@ -22,8 +23,12 @@ LIBS =
 
 ## flags
 
-override CFLAGS		= -Wall -O2 $(PFLAGS)
-override LDFLAGS	= -Wl,-Map,$(PRG).map
+CFLAGS	= -Wall -O2 $(PFLAGS)
+
+CFLAGS	+= -I$(PRJ_DIR)/include
+CFLAGS	+= -I$(PRJ_DIR)/boards/$(PLAT)/apps/uart
+
+LDFLAGS	= -Wl,-Map,$(PRG).map
 
 ## rules
 

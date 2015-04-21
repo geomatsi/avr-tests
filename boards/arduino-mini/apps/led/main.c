@@ -1,16 +1,15 @@
 #include <util/delay.h>
 #include <avr/io.h>
 
+#include "leds.h"
+
 int main (void){
-    DDRB = (1 << DDB5);
 
-    while (1){
+	leds_init();
 
-        PORTB |= (1 << PB5);
+    while (1) {
+        led_toggle(0);
         _delay_ms(500);
-
-        PORTB &= ~(1 << PB5);
-        _delay_ms(100);
     }
 
     return 1;
