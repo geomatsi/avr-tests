@@ -4,7 +4,7 @@
 
 ## paths
 
-VPATH += $(PRJ_DIR)/boards/$(PLAT)/apps/rf24node
+VPATH += $(PRJ_DIR)/boards/$(PLAT)/apps/rf24client
 VPATH += $(PRJ_DIR)/boards/$(PLAT)/bsp/clock
 VPATH += $(PRJ_DIR)/boards/$(PLAT)/bsp/leds
 VPATH += $(PRJ_DIR)/boards/$(PLAT)/bsp/spi
@@ -37,15 +37,15 @@ LIBS = $(LIBNRF24)
 CFLAGS	= -Wall -O2 $(PFLAGS)
 
 CFLAGS	+= -I$(PRJ_DIR)/include
-CFLAGS	+= -I$(PRJ_DIR)/boards/$(PLAT)/apps/rf24node
+CFLAGS	+= -I$(PRJ_DIR)/boards/$(PLAT)/apps/rf24client
 CFLAGS	+= $(LIBNRF24_INC)
 
 LDFLAGS	= -Wl,-Map,$(PRG).map
 
 ## rules
 
-rf24node: $(OBJ_DIR)/rf24node.hex $(OBJ_DIR)/rf24node.bin
-	cp $(OBJ_DIR)/rf24node.hex $(OBJ_DIR)/firmware.hex
+rf24client: $(OBJ_DIR)/rf24client.hex $(OBJ_DIR)/rf24client.bin
+	cp $(OBJ_DIR)/rf24client.hex $(OBJ_DIR)/firmware.hex
 
 %.hex: %.elf
 	$(OBJCOPY) -j .text -j .data -O ihex $^ $@
@@ -53,7 +53,7 @@ rf24node: $(OBJ_DIR)/rf24node.hex $(OBJ_DIR)/rf24node.bin
 %.bin: %.elf
 	$(OBJCOPY) -j .text -j .data -O binary $< $@
 
-$(OBJ_DIR)/rf24node.elf: $(NODE_OBJS) $(LIBS)
+$(OBJ_DIR)/rf24client.elf: $(NODE_OBJS) $(LIBS)
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(NODE_OBJS) $(LIBS)
 
 $(OBJ_DIR)/%.o: %.c

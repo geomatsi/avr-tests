@@ -37,7 +37,7 @@ DUDE_OPTIONS = \
 
 ## projects for devduino2
 
-TARGETS = "led uart rf24node"
+TARGETS = "led uart rf24client"
 
 ifeq ($(MAKECMDGOALS), led)
 include $(PRJ_DIR)/boards/$(PLAT)/apps/led/build.mk
@@ -47,8 +47,8 @@ ifeq ($(MAKECMDGOALS), uart)
 include $(PRJ_DIR)/boards/$(PLAT)/apps/uart/build.mk
 endif
 
-ifeq ($(MAKECMDGOALS), rf24node)
-include $(PRJ_DIR)/boards/$(PLAT)/apps/rf24node/build.mk
+ifeq ($(MAKECMDGOALS), rf24client)
+include $(PRJ_DIR)/boards/$(PLAT)/apps/rf24client/build.mk
 endif
 
 ## upload rules
