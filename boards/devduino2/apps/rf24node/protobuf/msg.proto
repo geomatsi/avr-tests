@@ -1,0 +1,4 @@
+message sensor_data {
+    required uint32 type = 1;
+    required uint32 data = 2;
+}
