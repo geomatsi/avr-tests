@@ -14,6 +14,8 @@
 #include "pb_decode.h"
 #include "msg.pb.h"
 
+/* */
+
 FILE uart_stream = FDEV_SETUP_STREAM(uart_putchar, NULL, _FDEV_SETUP_WRITE);
 
 int main (void)
@@ -46,7 +48,7 @@ int main (void)
 	delay_ms(500);
 
 	rf24_stop_listening(nrf);
-	rf24_set_payload_size(nrf, sizeof(buf));
+	rf24_enable_dynamic_payloads(nrf);
 	rf24_set_retries(nrf, 10 /* retry delay 2500us */, 5 /* retries */);
 	rf24_open_writing_pipe(nrf, addr);
 	rf24_power_up(nrf);
@@ -75,11 +77,13 @@ int main (void)
 		}
 
 
-		ret = rf24_write(nrf, buf, sizeof(buf));
+		ret = rf24_write(nrf, buf, pb_len);
 		if (ret) {
 			printf("write error: %d\n", ret);
 			rf24_status = rf24_flush_tx(nrf);
-		}
+		} else {
+			printf("written %d bytes\n", pb_len);
+        }
 
 		led_toggle(0);
 		delay_ms(1000);
