@@ -37,7 +37,7 @@ DUDE_OPTIONS = \
 
 ## projects for arduino-mini
 
-TARGETS = "led uart"
+TARGETS = "led uart gas-test"
 
 ifeq ($(MAKECMDGOALS), led)
 include $(PRJ_DIR)/boards/$(PLAT)/apps/led/build.mk
@@ -45,6 +45,10 @@ endif
 
 ifeq ($(MAKECMDGOALS), uart)
 include $(PRJ_DIR)/boards/$(PLAT)/apps/uart/build.mk
+endif
+
+ifeq ($(MAKECMDGOALS), gas-test)
+include $(PRJ_DIR)/boards/$(PLAT)/apps/gas-test/build.mk
 endif
 
 ## upload rules
