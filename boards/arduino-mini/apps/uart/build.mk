@@ -5,6 +5,7 @@
 ## paths
 
 VPATH += $(PRJ_DIR)/boards/$(PLAT)/apps/uart
+VPATH += $(PRJ_DIR)/boards/$(PLAT)/bsp/uart
 VPATH += $(PRJ_DIR)/boards/$(PLAT)/bsp/leds
 
 ## sources

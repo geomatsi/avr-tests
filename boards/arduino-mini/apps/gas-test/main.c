@@ -6,8 +6,6 @@
 #include "leds.h"
 #include "gas.h"
 
-FILE uart_stream = FDEV_SETUP_STREAM(uart_putchar, NULL, _FDEV_SETUP_WRITE);
-
 /*
  * Wait (100 * 160000) cycles = wait 16000000 cycles.
  * Equivalent to 1 second at 16 MHz.
@@ -26,9 +24,6 @@ int main (void)
 
 	uart_init();
 	leds_init();
-
-	stdout = &uart_stream;
-	stderr = &uart_stream;
 
 	while (1){
 

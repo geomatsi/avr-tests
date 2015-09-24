@@ -5,6 +5,7 @@
 ## paths
 
 VPATH += $(PRJ_DIR)/boards/$(PLAT)/apps/gas-test
+VPATH += $(PRJ_DIR)/boards/$(PLAT)/bsp/uart
 VPATH += $(PRJ_DIR)/boards/$(PLAT)/bsp/leds
 VPATH += $(PRJ_DIR)/boards/$(PLAT)/bsp/adc
 VPATH += $(PRJ_DIR)/boards/$(PLAT)/bsp/gas
