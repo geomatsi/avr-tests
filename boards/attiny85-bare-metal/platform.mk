@@ -38,10 +38,10 @@ DUDE_OPTIONS = \
 
 ## projects for arduino-mini
 
-TARGETS = "led"
+TARGETS = "led-gpio"
 
-ifeq ($(MAKECMDGOALS), led)
-include $(PRJ_DIR)/boards/$(PLAT)/apps/led/build.mk
+ifeq ($(MAKECMDGOALS), led-gpio)
+include $(PRJ_DIR)/boards/$(PLAT)/apps/led-gpio/build.mk
 endif
 
 ## upload rules
