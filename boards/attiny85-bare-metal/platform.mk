@@ -6,6 +6,9 @@
 #   http://www.atmel.com/ru/ru/devices/ATTINY85.aspx
 #   http://www.engbedded.com/fusecalc
 #   http://www.jdunman.com/ww/AmateurRadio/SDR/helix_air_net_au%20%20AVRDUDE%20and%20FTDI%20232H.htm
+#
+# Schematics of attiny85 programmer based on UM232H is shown on docs/avr-isp-using-um232h.png
+#
 
 ## toolchain
 
