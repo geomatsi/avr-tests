@@ -1,0 +1,8 @@
+* ATTiny85 pin settings
+
+PB0 = RX
+PB1 = TX
+
+* Serial port settings
+
+2400 8N1
