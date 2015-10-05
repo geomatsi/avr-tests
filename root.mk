@@ -24,6 +24,12 @@ info:
 
 ## dependencies
 
+# libsoftuart
+
+SOFTUART_LIB_DIR	= softuart
+LIBSOFTUART_INC		= -I$(SOFTUART_LIB_DIR)
+LIBSOFTUART			= $(SOFTUART_LIB_DIR)/libsoftuart_$(CHIP).a
+
 # libnrf24
 
 NRF24_LIB_DIR	= libnrf24
@@ -41,7 +47,14 @@ include $(PRJ_DIR)/boards/$(PLAT)/platform.mk
 
 ## build rules for dependencies
 
-deps: libnrf24 nanopb
+deps: libsoftuart libnrf24 nanopb
+
+libsoftuart:
+	make -C softuart \
+		MCU=$(CHIP) \
+		F_CPU=$(subst L,,$(CLK_FREQ)) \
+		lib
+	mv $(SOFTUART_LIB_DIR)/libmain.a $(SOFTUART_LIB_DIR)/libsoftuart_$(CHIP).a
 
 libnrf24:
 	make -C libnrf24 \
@@ -58,9 +71,12 @@ clean:
 	rm -rf $(OBJ_DIR)
 
 distclean:
+	make -C softuart clean
+	rm -rf $(LIBSOFTUART)
 	make -C libnrf24 CROSS_COMPILE=$(CROSS_COMPILE) TARGET=$(CHIP) PLT_FLAGS="$(PFLAGS)" clean
 	rm -rf $(OBJ_DIR)
 
+.PHONY: libsoftuart
 .PHONY: libnrf24
 .PHONY: nanopb
 .PHONY: distclean
