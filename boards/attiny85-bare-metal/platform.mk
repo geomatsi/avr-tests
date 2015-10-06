@@ -41,7 +41,7 @@ DUDE_OPTIONS = \
 
 ## projects for arduino-mini
 
-TARGETS = "led-gpio led-pwm softuart-test"
+TARGETS = "led-gpio led-pwm softuart-test adc-test"
 
 ifeq ($(MAKECMDGOALS), led-gpio)
 include $(PRJ_DIR)/boards/$(PLAT)/apps/led-gpio/build.mk
@@ -53,6 +53,10 @@ endif
 
 ifeq ($(MAKECMDGOALS), softuart-test)
 include $(PRJ_DIR)/boards/$(PLAT)/apps/softuart-test/build.mk
+endif
+
+ifeq ($(MAKECMDGOALS), adc-test)
+include $(PRJ_DIR)/boards/$(PLAT)/apps/adc-test/build.mk
 endif
 
 ## upload rules
