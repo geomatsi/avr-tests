@@ -8,7 +8,8 @@ long read_vcc(void)
 	long result;
 
 	/* select Vref = internal 1v1 , select Vin = A2(ADC2) */
-	result = analog_read(0x3, 0x2);
+
+    adc_scm_init(0x3, 0x2);
 
 	/* XXX Limitation of this approach
 	 * Here we rely upon the fact that Vcc is less than 3.3v on devDuino2.
@@ -16,6 +17,8 @@ long read_vcc(void)
 	 * Hence Vin/Vref < 1 and convertion result ADC = (Vin/Vref)*1024
 	 * fits to 10bit resolution.
 	 */
+
+	result = adc_scm_read();
 
 	/*
 	 * calculate Vcc in mV
@@ -35,7 +38,8 @@ long read_vcc_alt(void)
 	long result;
 
 	/* select Vref = AVcc = Vcc, select Vin = internal 1v1 */
-	result = analog_read(0x1, 0xe);
+
+    adc_scm_init(0x1, 0xe);
 
 	/* XXX Feature of this approach
 	 * In this approach Vref is Vcc. For some reason for Vref to settle.
@@ -43,6 +47,8 @@ long read_vcc_alt(void)
 	 * the correct value) if no delay_ms(50) between ADC enablement
 	 * and conversion start.
 	 */
+
+	result = adc_scm_read();
 
 	/*
 	 * calculate Vcc in mV

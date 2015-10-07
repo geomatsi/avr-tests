@@ -8,7 +8,6 @@ VPATH += $(PRJ_DIR)/boards/$(PLAT)/apps/gas-test
 VPATH += $(PRJ_DIR)/boards/$(PLAT)/bsp/uart
 VPATH += $(PRJ_DIR)/boards/$(PLAT)/bsp/leds
 VPATH += $(PRJ_DIR)/boards/$(PLAT)/bsp/adc
-VPATH += $(PRJ_DIR)/boards/$(PLAT)/bsp/gas
 
 ## sources
 
@@ -16,7 +15,6 @@ UART_SRCS := \
 	main.c \
 	uart.c \
 	leds.c \
-	gas.c \
 	adc.c
 
 UART_OBJS := $(UART_SRCS:.c=.o)

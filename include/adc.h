@@ -1,6 +1,9 @@
 #ifndef _AVR_ADC_H_
 #define _AVR_ADC_H_
 
-uint16_t analog_read(uint8_t ref, uint8_t pin);
+/* ADC single conversion mode */
+
+void adc_scm_init(uint8_t vref, uint8_t mux);
+uint16_t adc_scm_read(void);
 
 #endif /* _AVR_ADC_H_ */
