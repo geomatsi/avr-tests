@@ -5,11 +5,13 @@
 ## paths
 
 VPATH += $(PRJ_DIR)/boards/$(PLAT)/apps/adc-test
+VPATH += $(PRJ_DIR)/boards/$(PLAT)/bsp/adc
 
 ## sources
 
 ADC_TEST_SRCS := \
-	main.c
+	main.c \
+	adc.c
 
 ADC_TEST_OBJS := $(ADC_TEST_SRCS:.c=.o)
 ADC_TEST_OBJS := $(addprefix $(OBJ_DIR)/,$(ADC_TEST_OBJS))

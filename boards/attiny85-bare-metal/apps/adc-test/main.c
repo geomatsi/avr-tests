@@ -2,6 +2,8 @@
 #include <util/delay.h>
 #include <avr/io.h>
 
+#include "adc.h"
+
 /* s/w uart */
 
 #include "softuart.h"
@@ -31,40 +33,6 @@ void swuart_init(void)
     stdout = &swuart_stream;
 }
 
-
-/* */
-
-void adc_init(void)
-{
-    /* ADC settings I
-     *     ref selection bits = x00 => Vref = VCC (in our case 5v0)
-     *     pin mux = 0010 => use ADC2 (PB4) for input
-     */
-
-    ADMUX = (0 << ADLAR) | (0 << REFS1) | (0 << REFS0) | (0 << MUX3) | (0 << MUX2) | (1 << MUX1) | (0 << MUX0);
-
-    /* ADC settings II
-     *     prescaler bits = 011 => div = 8 => ADC freq = 125 kHz for F_CPU = 1 MHz
-     */
-
-    ADCSRA = (1 << ADEN) | (0 << ADPS2) | (1 << ADPS1) | (1 << ADPS0);
-}
-
-uint16_t adc_read(void)
-{
-    uint16_t r, h, l;
-
-    ADCSRA |= (1 << ADSC);
-    while (bit_is_set(ADCSRA, ADSC));
-
-    /* NB: low byte must be read first - it then locks high byte */
-    l = ADCL;
-    h = ADCH;
-    r = (h << 8) | l;
-
-    return r;
-}
-
 /* */
 
 int main(void)
@@ -80,9 +48,9 @@ int main(void)
 	DDRB |= (1 << DDB2);
     PORTB |= (1 << PB2);
 
-    /* init adc */
+    /* init adc: Vref = Vcc = 5v0, select A2(PB4) channel */
 
-    adc_init();
+    adc_scm_init(0, 2);
 
     /* main loop */
 
@@ -94,7 +62,7 @@ int main(void)
 
         /* read adc */
 
-        v = adc_read();
+        v = adc_scm_read();
 
         /* translate adc measurement to voltage according to Vref = VCC */
 
