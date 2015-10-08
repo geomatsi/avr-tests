@@ -5,11 +5,13 @@
 ## paths
 
 VPATH += $(PRJ_DIR)/boards/$(PLAT)/apps/softuart-test
+VPATH += $(PRJ_DIR)/boards/$(PLAT)/bsp/swuart
 
 ## sources
 
 SOFTUART_TEST_SRCS := \
-	main.c
+	main.c \
+	swuart.c
 
 SOFTUART_TEST_OBJS := $(SOFTUART_TEST_SRCS:.c=.o)
 SOFTUART_TEST_OBJS := $(addprefix $(OBJ_DIR)/,$(SOFTUART_TEST_OBJS))

@@ -5,12 +5,14 @@
 ## paths
 
 VPATH += $(PRJ_DIR)/boards/$(PLAT)/apps/adc-test
+VPATH += $(PRJ_DIR)/boards/$(PLAT)/bsp/swuart
 VPATH += $(PRJ_DIR)/boards/$(PLAT)/bsp/adc
 
 ## sources
 
 ADC_TEST_SRCS := \
 	main.c \
+	swuart.c \
 	adc.c
 
 ADC_TEST_OBJS := $(ADC_TEST_SRCS:.c=.o)
