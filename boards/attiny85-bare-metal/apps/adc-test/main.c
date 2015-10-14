@@ -41,7 +41,7 @@ int main(void)
 
         /* */
 
-        printf("adc[%u]\n", (unsigned int) v);
+        printf("%u\n", (unsigned int) v);
         _delay_ms(500);
     }
 
