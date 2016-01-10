@@ -41,7 +41,7 @@ DUDE_OPTIONS = \
 
 ## projects for arduino-mini
 
-TARGETS = "led-gpio led-pwm softuart-test adc-test"
+TARGETS = "led-gpio led-pwm softuart-test adc-test gas-sensor"
 
 ifeq ($(MAKECMDGOALS), led-gpio)
 include $(PRJ_DIR)/boards/$(PLAT)/apps/led-gpio/build.mk
@@ -57,6 +57,10 @@ endif
 
 ifeq ($(MAKECMDGOALS), adc-test)
 include $(PRJ_DIR)/boards/$(PLAT)/apps/adc-test/build.mk
+endif
+
+ifeq ($(MAKECMDGOALS), gas-sensor)
+include $(PRJ_DIR)/boards/$(PLAT)/apps/gas-sensor/build.mk
 endif
 
 ## upload rules
