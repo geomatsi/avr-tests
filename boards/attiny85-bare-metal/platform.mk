@@ -25,7 +25,7 @@ OBJDUMP	= $(CROSS_COMPILE)-objdump
 CHIP		= attiny85
 CLK_FREQ    = 1000000L
 
-PFLAGS = -mmcu=$(CHIP) -DF_CPU=$(CLK_FREQ)
+PFLAGS = -mmcu=$(CHIP) -DF_CPU=$(CLK_FREQ) -Os -DNRF24_LOG_LEVEL=1
 
 ## platform flash flags
 
