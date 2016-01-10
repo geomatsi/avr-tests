@@ -47,8 +47,6 @@ include $(PRJ_DIR)/boards/$(PLAT)/platform.mk
 
 ## build rules for dependencies
 
-deps: libsoftuart libnrf24 nanopb
-
 libsoftuart:
 	make -C softuart \
 		MCU=$(CHIP) \

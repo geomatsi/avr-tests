@@ -14,6 +14,9 @@ LD		= $(CROSS_COMPILE)-ld
 OBJCOPY = $(CROSS_COMPILE)-objcopy
 OBJDUMP	= $(CROSS_COMPILE)-objdump
 
+## dependencies
+
+deps: libnrf24 nanopb
 
 ## platform compile flags
 
