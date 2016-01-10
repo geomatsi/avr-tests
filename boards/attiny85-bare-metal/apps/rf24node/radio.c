@@ -51,7 +51,7 @@ struct rf24* radio_init(void)
 {
 	spi_pin_init();
 	spi_init();
-	spi_set_mode(SPI_MODE0);
+	spi_set_mode(SPI_MODE_0);
 
 	rf24_init(&nrf);
 
