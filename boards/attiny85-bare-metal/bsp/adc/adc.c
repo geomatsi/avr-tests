@@ -21,6 +21,7 @@ void adc_scm_init(uint8_t vref, uint8_t mux)
      *   -- mux = 1 = 0001b => ADC1 (PB2)
      *   -- mux = 2 = 0010b => ADC2 (PB4)
      *   -- mux = 3 = 0011b => ADC3 (PB3)
+     *   -- mux = 12 = 1100b => internal Vbg as input voltage
      *
      * - Disable ADC Left Adjust Result: ADLAR = 0
      */
