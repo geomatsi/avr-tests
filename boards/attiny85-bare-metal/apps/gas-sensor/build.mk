@@ -36,6 +36,7 @@ LDFLAGS	= -Wl,-Map,$(PRG).map
 
 gas-sensor: $(OBJ_DIR)/gas-sensor.hex
 	cp $(OBJ_DIR)/gas-sensor.hex $(OBJ_DIR)/firmware.hex
+	avr-size --mcu=$(CHIP) --format=avr $(OBJ_DIR)/gas-sensor.elf
 
 %.hex: %.elf
 	$(OBJCOPY) -j .text -j .data -O ihex $^ $@

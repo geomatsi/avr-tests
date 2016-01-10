@@ -46,6 +46,7 @@ LDFLAGS	= -Wl,-Map,$(PRG).map
 
 rf24client: $(OBJ_DIR)/rf24client.hex $(OBJ_DIR)/rf24client.bin
 	cp $(OBJ_DIR)/rf24client.hex $(OBJ_DIR)/firmware.hex
+	avr-size --mcu=$(CHIP) --format=avr $(OBJ_DIR)/rf24client.elf
 
 %.hex: %.elf
 	$(OBJCOPY) -j .text -j .data -O ihex $^ $@
