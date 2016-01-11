@@ -1,6 +1,6 @@
 #
 # arch: avr
-# chip: atmega168
+# chip: attiny85
 # platform: bare metal attiny85
 # description:
 #   http://www.atmel.com/ru/ru/devices/ATTINY85.aspx
@@ -21,7 +21,7 @@ OBJDUMP	= $(CROSS_COMPILE)-objdump
 
 ## dependencies
 
-deps: libnrf24 libsoftuart
+deps: libnrf24 libsoftuart nanopb
 
 ## platform compile flags
 
@@ -44,7 +44,7 @@ DUDE_OPTIONS = \
 
 ## projects for arduino-mini
 
-TARGETS = "led-gpio led-pwm softuart-test adc-test gas-sensor rf24client"
+TARGETS = "led-gpio led-pwm softuart-test adc-test gas-sensor rf24client rf24node"
 
 ifeq ($(MAKECMDGOALS), led-gpio)
 include $(PRJ_DIR)/boards/$(PLAT)/apps/led-gpio/build.mk
@@ -68,6 +68,10 @@ endif
 
 ifeq ($(MAKECMDGOALS), rf24client)
 include $(PRJ_DIR)/boards/$(PLAT)/apps/rf24client/build.mk
+endif
+
+ifeq ($(MAKECMDGOALS), rf24node)
+include $(PRJ_DIR)/boards/$(PLAT)/apps/rf24node/build.mk
 endif
 
 ## upload rules
