@@ -10,6 +10,7 @@ VPATH += $(PRJ_DIR)/boards/$(PLAT)/apps/rf24node
 VPATH += $(PRJ_DIR)/boards/$(PLAT)/apps/rf24node/protobuf
 VPATH += $(PRJ_DIR)/boards/$(PLAT)/bsp/clock
 VPATH += $(PRJ_DIR)/boards/$(PLAT)/bsp/spi
+VPATH += $(PRJ_DIR)/boards/$(PLAT)/bsp/adc
 
 ## protobuf
 
@@ -25,6 +26,7 @@ NODE_SRCS := \
 	clock.c \
 	radio.c \
 	spi.c \
+	adc.c \
 	pb_common.c \
 	pb_encode.c \
 	msg.pb.c \

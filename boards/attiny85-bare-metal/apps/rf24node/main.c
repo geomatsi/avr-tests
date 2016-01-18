@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 #include "clock.h"
-#include "uart.h"
+#include "adc.h"
 
 #include "radio.h"
 
@@ -13,17 +13,32 @@
 
 /* */
 
+#define PB_LIST_LEN	3
+
+/* */
+
+uint32_t get_battery_voltage(void);
+uint32_t get_temp(void);
+
+/* */
+
 static bool sensor_callback(pb_ostream_t *stream, const pb_field_t *field, void * const *arg)
 {
     sensor_data sensor = {};
 
-    uint32_t data[2];
+    uint32_t data[PB_LIST_LEN];
     uint32_t idx;
 
+	/* seq number */
     data[0] = (uint32_t)(*arg);
-    data[1] = (uint32_t)42;
 
-    for (idx = 0; idx < 2; idx++) {
+	/* battery voltage */
+    data[1] = get_battery_voltage();
+
+	/* temperature */
+    data[2] = get_temp();
+
+    for (idx = 0; idx < PB_LIST_LEN; idx++) {
 
         sensor.type = idx;
         sensor.data = data[idx];
@@ -42,7 +57,7 @@ static bool sensor_callback(pb_ostream_t *stream, const pb_field_t *field, void 
     return true;
 }
 
-/* */
+/* leds */
 
 static void led_init(void)
 {
@@ -78,7 +93,35 @@ static void led_blink(uint16_t count, uint16_t delay)
 	}
 }
 
-/* */
+/* read ds18B20 temp sensor */
+
+uint32_t get_temp(void)
+{
+	return (uint32_t)42;
+}
+
+/* read battery */
+
+uint32_t get_battery_voltage(void)
+{
+	uint32_t v;
+
+	/* re-init adc: Vref = Vcc ?= 3v3, Vbg (1v1) input channel */
+	adc_scm_init(0, 12);
+	delay_ms(5);
+
+	/* read twice to make sure ADC is settled */
+	v = (uint32_t)adc_scm_read();
+	delay_ms(5);
+	v = (uint32_t)adc_scm_read();
+
+	/* Vcc = 1024 * 1100 / ADC */
+	v = 1126400 / v;
+
+	return v;
+}
+
+/* main */
 
 int main (void)
 {
