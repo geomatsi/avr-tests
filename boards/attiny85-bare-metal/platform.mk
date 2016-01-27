@@ -21,6 +21,8 @@ OBJDUMP	= $(CROSS_COMPILE)-objdump
 
 ## dependencies
 
+NRF24_CFG_FLAGS = -DNRF24_LOG_LEVEL=1
+
 deps: libnrf24 libsoftuart nanopb
 
 ## platform compile flags
@@ -28,7 +30,7 @@ deps: libnrf24 libsoftuart nanopb
 CHIP		= attiny85
 CLK_FREQ    = 1000000L
 
-PFLAGS = -mmcu=$(CHIP) -DF_CPU=$(CLK_FREQ) -DNRF24_LOG_LEVEL=1 \
+PFLAGS = -mmcu=$(CHIP) -DF_CPU=$(CLK_FREQ) \
 	-Os -fshort-enums -ffunction-sections -Wl,--gc-sections
 
 ## platform flash flags

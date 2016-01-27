@@ -16,6 +16,8 @@ OBJDUMP	= $(CROSS_COMPILE)-objdump
 
 ## dependencies
 
+NRF24_CFG_FLAGS = -DNRF24_LOG_LEVEL=2
+
 deps: libnrf24 nanopb
 
 ## platform compile flags

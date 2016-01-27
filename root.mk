@@ -58,7 +58,8 @@ libnrf24:
 	make -C libnrf24 \
 		CROSS_COMPILE=$(CROSS_COMPILE) \
 		TARGET=$(CHIP) \
-		PLT_FLAGS="$(PFLAGS)"
+		PLT_FLAGS="$(PFLAGS)" \
+		CFG_FLAGS="$(NRF24_CFG_FLAGS)"
 
 nanopb:
 	make -C nanopb/generator/proto
