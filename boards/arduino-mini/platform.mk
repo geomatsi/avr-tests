@@ -23,7 +23,8 @@ deps: libnrf24 nanopb
 CHIP		= atmega168
 CLK_FREQ    = 16000000L
 
-PFLAGS = -mmcu=$(CHIP) -DF_CPU=$(CLK_FREQ)
+PFLAGS = -mmcu=$(CHIP) -DF_CPU=$(CLK_FREQ) \
+	-Os -fshort-enums -ffunction-sections -Wl,--gc-sections
 
 ## platform flash flags
 
