@@ -26,7 +26,7 @@ LIBS =
 
 ## flags
 
-CFLAGS	= -Wall -O2 $(PFLAGS)
+CFLAGS	= -Wall $(PFLAGS)
 
 CFLAGS	+= -I$(PRJ_DIR)/include
 CFLAGS	+= -I$(PRJ_DIR)/boards/$(PLAT)/apps/gas-test
