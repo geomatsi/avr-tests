@@ -21,7 +21,7 @@ OBJDUMP	= $(CROSS_COMPILE)-objdump
 
 ## dependencies
 
-NRF24_CFG_FLAGS = -DNRF24_LOG_LEVEL=1
+NRF24_CFG_FLAGS = -DNRF24_LOG_LEVEL=1 -DCONFIG_LIB_RF24_SIZEOPT
 
 deps: libnrf24 libsoftuart nanopb
 
