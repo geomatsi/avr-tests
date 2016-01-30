@@ -1,0 +1,12 @@
+** ATTiny85 pin settings
+
+* Serial port settings
+
+PB0 = RX
+PB1 = TX
+
+2400 8N1
+
+* 1-wire pin settings
+
+1-wire data: PB3
