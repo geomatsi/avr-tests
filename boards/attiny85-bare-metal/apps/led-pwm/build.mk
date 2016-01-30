@@ -31,6 +31,7 @@ LDFLAGS	= -Wl,-Map,$(PRG).map
 
 led-pwm: $(OBJ_DIR)/led-pwm.hex
 	cp $(OBJ_DIR)/led-pwm.hex $(OBJ_DIR)/firmware.hex
+	avr-size --mcu=$(CHIP) --format=avr $(OBJ_DIR)/led-pwm.elf
 
 %.hex: %.elf
 	$(OBJCOPY) -j .text -j .data -O ihex $^ $@

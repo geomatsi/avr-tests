@@ -34,6 +34,7 @@ LDFLAGS	= -Wl,-Map,$(PRG).map
 
 softuart-test: $(OBJ_DIR)/softuart-test.hex
 	cp $(OBJ_DIR)/softuart-test.hex $(OBJ_DIR)/firmware.hex
+	avr-size --mcu=$(CHIP) --format=avr $(OBJ_DIR)/softuart-test.elf
 
 %.hex: %.elf
 	$(OBJCOPY) -j .text -j .data -O ihex $^ $@

@@ -36,6 +36,7 @@ LDFLAGS	= -Wl,-Map,$(PRG).map
 
 adc-test: $(OBJ_DIR)/adc-test.hex
 	cp $(OBJ_DIR)/adc-test.hex $(OBJ_DIR)/firmware.hex
+	avr-size --mcu=$(CHIP) --format=avr $(OBJ_DIR)/adc-test.elf
 
 %.hex: %.elf
 	$(OBJCOPY) -j .text -j .data -O ihex $^ $@
