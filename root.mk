@@ -5,7 +5,7 @@
 ## platform definitions
 
 ARCH = avr
-PLAT ?= devduino2
+PLAT ?= attiny85-bare-metal
 
 ## project and output directories
 
