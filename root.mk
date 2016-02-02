@@ -17,11 +17,6 @@ PRJ_DIR = $(shell pwd)/tests
 
 all: info
 
-info:
-	@echo "ARCH = $(ARCH)"
-	@echo "PLAT = $(PLAT)"
-	@echo "BUILD TARGETS = $(TARGETS)"
-
 ## dependencies
 
 # libsoftuart
@@ -44,6 +39,14 @@ NANOPB_INC		= -I$(NANOPB_DIR)
 ## target specific definitions
 
 include $(PRJ_DIR)/boards/$(PLAT)/platform.mk
+
+## information
+
+info:
+	@echo "ARCH = $(ARCH)"
+	@echo "PLAT = $(PLAT)"
+	@echo "FREQ = $(CLK_FREQ)"
+	@echo "BUILD TARGETS = $(TARGETS)"
 
 ## build rules for dependencies
 
