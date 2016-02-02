@@ -13,22 +13,23 @@
 
 static void f_pin_high(void)
 {
-    DDRB |= _BV(3);
-	PORTB |= _BV(3);
+	DDRB |= _BV(DDB3);
+	PORTB |= _BV(PB3);
 }
 
 static void f_pin_low(void)
 {
-    DDRB |= _BV(3);
-	PORTB &= ~_BV(3);
+	DDRB |= _BV(DDB3);
+	PORTB &= ~_BV(PB3);
 }
 
 static uint8_t f_pin_value(void)
 {
 	uint8_t val;
 
-	DDRB &= ~_BV(3);
-	val = (PINB & _BV(3)) ? true : false;
+	DDRB &= ~_BV(DDB3);
+	PORTB &= ~_BV(PB3);
+	val = (PINB & _BV(PB3)) ? true : false;
 
 	return val;
 }
