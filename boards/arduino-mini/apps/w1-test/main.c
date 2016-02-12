@@ -1,64 +1,26 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-#include <avr/io.h>
-
 #include "clock.h"
 #include "uart.h"
 
 #include "w1.h"
 #include "ds18b20.h"
 
-/* 1-wire pin HAL */
-
-static void f_pin_high(void)
-{
-	DDRB |= _BV(DDB3);
-	PORTB |= _BV(PB3);
-}
-
-static void f_pin_low(void)
-{
-	DDRB |= _BV(DDB3);
-	PORTB &= ~_BV(PB3);
-}
-
-static uint8_t f_pin_value(void)
-{
-	uint8_t val;
-
-	DDRB &= ~_BV(DDB3);
-	PORTB &= ~_BV(PB3);
-	val = (PINB & _BV(PB3)) ? true : false;
-
-	return val;
-}
-
-/* */
-
-static struct w1_pin pin = {
-	.pin_high	= f_pin_high,
-	.pin_low	= f_pin_low,
-	.pin_value	= f_pin_value,
-};
-
 /* */
 
 int main (void)
 {
 	uint8_t data[9];
+	uint8_t i;
 	int temp;
 	bool ret;
-	int i;
 
     uart_init();
-	w1_set_pin(&pin);
 
 	if (!ds18b20_set_res(R12BIT)) {
 		printf("WARN: couldn't set resolution\n");
 	}
-
-init_1wire:
 
 	while (1) {
 
@@ -69,7 +31,7 @@ init_1wire:
 		if (!ret) {
 			printf("presence not detected: wait for 2 sec...\n");
 			delay_ms(2000);
-			goto init_1wire;
+			continue;
 		}
 
 		delay_ms(1);
@@ -88,7 +50,7 @@ init_1wire:
 		if (!ret) {
 			printf("presence not detected: wait for 2 sec...\n");
 			delay_ms(2000);
-			goto init_1wire;
+			continue;
 		}
 
 		delay_ms(1);

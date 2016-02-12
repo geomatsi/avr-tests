@@ -4,7 +4,7 @@
 
 ## paths
 
-VPATH += $(PRJ_DIR)/boards/$(PLAT)/apps/w1
+VPATH += $(PRJ_DIR)/boards/$(PLAT)/apps/w1-test
 VPATH += $(PRJ_DIR)/boards/$(PLAT)/bsp/clock
 VPATH += $(PRJ_DIR)/boards/$(PLAT)/bsp/uart
 VPATH += $(PRJ_DIR)/boards/$(PLAT)/bsp/leds
@@ -32,19 +32,19 @@ LIBS =
 CFLAGS	= -Wall $(PFLAGS)
 
 CFLAGS	+= -I$(PRJ_DIR)/include
-CFLAGS	+= -I$(PRJ_DIR)/boards/$(PLAT)/apps/w1
+CFLAGS	+= -I$(PRJ_DIR)/boards/$(PLAT)/apps/w1-test
 
 LDFLAGS	= -Wl,-Map,$(PRG).map
 
 ## rules
 
-w1: $(OBJ_DIR)/w1.hex
-	cp $(OBJ_DIR)/w1.hex $(OBJ_DIR)/firmware.hex
+w1-test: $(OBJ_DIR)/w1-test.hex
+	cp $(OBJ_DIR)/w1-test.hex $(OBJ_DIR)/firmware.hex
 
 %.hex: %.elf
 	$(OBJCOPY) -j .text -j .data -O ihex $^ $@
 
-$(OBJ_DIR)/w1.elf: $(W1_OBJS) $(LIBS)
+$(OBJ_DIR)/w1-test.elf: $(W1_OBJS) $(LIBS)
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(W1_OBJS) $(LIBS)
 
 $(OBJ_DIR)/%.o: %.c

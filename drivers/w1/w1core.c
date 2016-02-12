@@ -2,23 +2,19 @@
 
 #include <avr/interrupt.h>
 #include <util/delay.h>
-#include <avr/io.h>
 
 #include <stdbool.h>
 #include <stdio.h>
 
-#include "w1.h"
+/*
+ * w1_ops header should provide the following
+ * app-specific defines to control pin:
+ *	- SET_PIN_HIGH()
+ *	- SET_PIN_LOW()
+ *	- GET_PIN_VALUE()
+ */
 
-/* */
-
-static struct w1_pin *pin;
-
-/* set IO registers */
-
-void w1_set_pin(struct w1_pin *p)
-{
-	pin = p;
-}
+#include "w1_ops.h"
 
 /* 1wire reset and check presence */
 
@@ -29,15 +25,15 @@ bool w1_init_transaction(void)
 	cli();
 
 	/* 1wire reset */
-	pin->pin_low();
+	SET_PIN_LOW();
 	_delay_us(600);
 
 	/* 1wire relax */
-	pin->pin_high();
+	SET_PIN_HIGH();
 	_delay_us(80);
 
 	/* 1wire check presence */
-	val = pin->pin_value();
+	val = GET_PIN_VALUE();
 	_delay_us(520);
 
 	sei();
@@ -49,27 +45,31 @@ bool w1_init_transaction(void)
 
 void w1_send_byte(uint8_t byte)
 {
-	uint8_t bit;
+	volatile uint8_t bit;
 	int i;
 
 	cli();
 
 	for(i = 0; i < 8; i++) {
 
-		bit = (byte >> i) & 0x01;
-		pin->pin_low();
+		// bit is declared as volatile:
+		// otherwise compiler may reorder code and perform shift after pin is set low,
+		// which may significantly increase low pulse on 1MHz devices
 
-		if (0 == bit) {
-			_delay_us(80);
-			pin->pin_high();
+		bit = (byte >> i) & 0x01;
+		SET_PIN_LOW();
+
+		if (bit) {
+			_delay_us(2);
+			SET_PIN_HIGH();
+			_delay_us(58);
 		} else {
-			_delay_us(10);
-			pin->pin_high();
-			_delay_us(70);
+			_delay_us(60);
+			SET_PIN_HIGH();
 		}
 
 		/* min here is 1 usec */
-		_delay_us(20);
+		_delay_us(5);
 	}
 
 	sei();
@@ -79,8 +79,8 @@ void w1_send_byte(uint8_t byte)
 
 uint8_t w1_recv_byte(void)
 {
-	uint8_t byte;
-	uint8_t bit;
+	volatile uint8_t byte;
+	volatile uint8_t bit;
 	int i;
 
 	byte = 0;
@@ -89,20 +89,19 @@ uint8_t w1_recv_byte(void)
 
 	for (i = 0; i < 8; i++) {
 
-		pin->pin_low();
-		_delay_us(5);
+		SET_PIN_LOW();
+		_delay_us(3);
+		SET_PIN_HIGH();
+		_delay_us(8);
 
-		pin->pin_high();
-		_delay_us(20);
+		bit = GET_PIN_VALUE();
+		_delay_us(40);
 
-		bit = pin->pin_value();
-		_delay_us(55);
-
-		if (1 == bit) {
+		if (bit) {
 			byte |= (0x1 << i);
 		}
 
-		_delay_us(20);
+		_delay_us(5);
 	}
 
 	sei();

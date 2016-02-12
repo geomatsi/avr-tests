@@ -6,7 +6,6 @@
 
 VPATH += $(PRJ_DIR)/boards/$(PLAT)/apps/w1-test
 VPATH += $(PRJ_DIR)/boards/$(PLAT)/bsp/swuart
-VPATH += $(PRJ_DIR)/boards/$(PLAT)/bsp/clock
 
 VPATH += $(PRJ_DIR)/drivers/w1
 
@@ -15,7 +14,6 @@ VPATH += $(PRJ_DIR)/drivers/w1
 W1_TEST_SRCS := \
 	main.c \
 	swuart.c \
-	clock.c \
 	w1core.c \
 	ds18b20.c \
 

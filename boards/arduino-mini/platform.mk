@@ -57,8 +57,8 @@ ifeq ($(MAKECMDGOALS), gas-test)
 include $(PRJ_DIR)/boards/$(PLAT)/apps/gas-test/build.mk
 endif
 
-ifeq ($(MAKECMDGOALS), w1)
-include $(PRJ_DIR)/boards/$(PLAT)/apps/w1/build.mk
+ifeq ($(MAKECMDGOALS), w1-test)
+include $(PRJ_DIR)/boards/$(PLAT)/apps/w1-test/build.mk
 endif
 
 ## upload rules
