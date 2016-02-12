@@ -85,3 +85,7 @@ endif
 
 upload:
 	avrdude $(DUDE_OPTIONS) -U flash:w:out/firmware.hex
+
+# Fuse bits:
+#	- to set 8MHz:  -U lfuse:w:0xe2:m -U hfuse:w:0xdf:m -U efuse:w:0xff:m
+#	- to set 1MHz:	-U lfuse:w:0x62:m -U hfuse:w:0xdf:m -U efuse:w:0xff:m

@@ -4,3 +4,6 @@
 *.map
 *.o
 \.*.swp
+
+tags
+patches
