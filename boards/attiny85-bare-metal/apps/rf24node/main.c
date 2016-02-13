@@ -128,7 +128,7 @@ int main (void)
 	struct rf24 *nrf;
 
 	uint8_t addr[] = {'E', 'F', 'C', 'L', 'I'};
-	uint8_t buf[20];
+	uint8_t buf[32];
 
 	uint8_t rf24_status;
 	int ret;
@@ -143,7 +143,6 @@ int main (void)
 	/* */
 
 	led_init();
-	led_blink(3, 100);
 
 	nrf = radio_init();
 
