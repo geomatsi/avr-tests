@@ -1,9 +1,13 @@
+#include <util/delay.h>
 #include <avr/io.h>
 #include <string.h>
 #include <stdio.h>
 
 #include "clock.h"
 #include "adc.h"
+
+#include "w1.h"
+#include "ds18b20.h"
 
 #include "radio.h"
 
@@ -17,8 +21,8 @@
 
 /* */
 
-uint32_t get_battery_voltage(void);
-uint32_t get_temp(void);
+uint32_t volt;
+uint32_t temp;
 
 /* */
 
@@ -33,10 +37,10 @@ static bool sensor_callback(pb_ostream_t *stream, const pb_field_t *field, void 
     data[0] = (uint32_t)(*arg);
 
 	/* battery voltage */
-    data[1] = get_battery_voltage();
+    data[1] = volt;
 
 	/* temperature */
-    data[2] = get_temp();
+    data[2] = temp;
 
     for (idx = 0; idx < PB_LIST_LEN; idx++) {
 
@@ -57,47 +61,57 @@ static bool sensor_callback(pb_ostream_t *stream, const pb_field_t *field, void 
     return true;
 }
 
-/* leds */
-
-static void led_init(void)
-{
-    /* define PB3 as LED, set it to zero */
-	DDRB |= (1 << DDB3);
-    PORTB &= ~(1 << PB3);
-}
-
-static void led_toggle()
-{
-	PORTB ^= (1 << PB3);
-}
-
-static void led_on()
-{
-	PORTB |= (1 << PB3);
-}
-
-static void led_off()
-{
-	PORTB &= ~(1 << PB3);
-}
-
-static void led_blink(uint16_t count, uint16_t delay)
-{
-	uint16_t i;
-
-	for(i = 0; i < count; i++) {
-		led_on();
-		delay_ms(delay);
-		led_off();
-		delay_ms(delay);
-	}
-}
-
 /* read ds18B20 temp sensor */
 
 uint32_t get_temp(void)
 {
-	return (uint32_t)42;
+	uint8_t data[9];
+	uint8_t i;
+	bool ret;
+	int temp;
+
+	/* reset and check presence */
+	ret = w1_init_transaction();
+	if (!ret) {
+		return 1001;
+	}
+
+	/* skip ROM: next command can be broadcasted */
+	w1_send_byte(SKIP_ROM);
+
+	/* start single temperature conversion */
+	w1_send_byte(CONVERT_T);
+
+	/* temperature conversion takes ~1sec */
+	_delay_ms(1000);
+
+	/* reset and check presence */
+	ret = w1_init_transaction();
+	if (!ret) {
+		return 1002;
+	}
+
+	/* skip ROM: careful !!! works only for one device on bus: next command is unicast */
+	w1_send_byte(SKIP_ROM);
+
+	/* read scratchpad */
+	w1_send_byte(READ_PAD);
+
+	/* get all scratchpad bytes */
+	for (i = 0; i < 9; i++) {
+		data[i] = w1_recv_byte();
+	}
+
+	/* check crc */
+	ret = ds18b20_crc_check(data, 9);
+	if (!ret) {
+		return 1003;
+	}
+
+	/* calculate temperature */
+	temp = ds18b20_get_temp(data[1], data[0]);
+
+	return (uint32_t)temp;
 }
 
 /* read battery */
@@ -142,7 +156,10 @@ int main (void)
 
 	/* */
 
-	led_init();
+	volt = -1;
+	temp = -1;
+
+	ds18b20_set_res(R12BIT);
 
 	nrf = radio_init();
 
@@ -153,8 +170,6 @@ int main (void)
 	rf24_set_retries(nrf, 10 /* retry delay 2500us */, 5 /* retries */);
 	rf24_open_writing_pipe(nrf, addr);
 	rf24_power_up(nrf);
-
-	led_blink(3, 100);
 
 	while (1) {
 
@@ -169,18 +184,19 @@ int main (void)
         pb_len = stream.bytes_written;
 
 		if (!pb_status) {
-			led_blink(5, 50);
+			/* FIXME */
 		}
-
 
 		ret = rf24_write(nrf, buf, pb_len);
 		if (ret) {
 			rf24_status = rf24_flush_tx(nrf);
-			led_blink(3, 100);
         }
 
-		led_toggle();
-		delay_ms(1000);
+		volt = get_battery_voltage();
+		temp = get_temp();
+
+		_delay_ms(500);
+		/* NB: additional delay - get_temp takes > 1sec */
 	}
 
 	return 1;

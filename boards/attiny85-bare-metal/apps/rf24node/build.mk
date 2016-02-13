@@ -12,6 +12,8 @@ VPATH += $(PRJ_DIR)/boards/$(PLAT)/bsp/clock
 VPATH += $(PRJ_DIR)/boards/$(PLAT)/bsp/spi
 VPATH += $(PRJ_DIR)/boards/$(PLAT)/bsp/adc
 
+VPATH += $(PRJ_DIR)/drivers/w1
+
 ## protobuf
 
 PROTOC ?= protoc
@@ -27,6 +29,8 @@ NODE_SRCS := \
 	radio.c \
 	spi.c \
 	adc.c \
+	w1core.c \
+	ds18b20.c \
 	pb_common.c \
 	pb_encode.c \
 	msg.pb.c \
