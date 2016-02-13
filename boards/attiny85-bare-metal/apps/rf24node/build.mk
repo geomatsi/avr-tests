@@ -42,6 +42,9 @@ LIBS = $(LIBNRF24)
 
 CFLAGS	= --std=c99 $(PFLAGS)
 
+# tweak nanopb to fit into attiny
+CFLAGS += -DPB_BUFFER_ONLY -DPB_NO_ERRMSG
+
 CFLAGS	+= -I$(PRJ_DIR)/include
 CFLAGS	+= -I$(PRJ_DIR)/boards/$(PLAT)/apps/rf24node
 CFLAGS	+= -I$(PRJ_DIR)/boards/$(PLAT)/apps/rf24node/protobuf
