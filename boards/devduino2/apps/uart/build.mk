@@ -34,6 +34,7 @@ LDFLAGS	= -Wl,-Map,$(PRG).map
 
 uart: $(OBJ_DIR)/uart.hex
 	cp $(OBJ_DIR)/uart.hex $(OBJ_DIR)/firmware.hex
+	avr-size --mcu=$(CHIP) --format=avr $(OBJ_DIR)/uart.elf
 
 %.hex: %.elf
 	$(OBJCOPY) -j .text -j .data -O ihex $^ $@
