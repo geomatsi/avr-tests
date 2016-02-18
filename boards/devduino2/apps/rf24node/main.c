@@ -16,21 +16,27 @@
 
 /* */
 
+#define PB_LIST_LEN 3
+
+/* */
+
 FILE uart_stream = FDEV_SETUP_STREAM(uart_putchar, NULL, _FDEV_SETUP_WRITE);
 
 /* */
 
 bool sensor_callback(pb_ostream_t *stream, const pb_field_t *field, void * const *arg)
 {
+	uint32_t *dptr = (uint32_t *)(*arg);
     sensor_data sensor = {};
 
-    uint32_t data[2];
+    uint32_t data[PB_LIST_LEN];
     uint32_t idx;
 
-    data[0] = (uint32_t) read_vcc();
-    data[1] = (uint32_t) read_temp_mcp9700();
+	data[0] = (uint32_t)(*dptr);
+    data[1] = (uint32_t)read_vcc();
+    data[2] = (uint32_t)read_temp_mcp9700();
 
-    for (idx = 0; idx < 2; idx++) {
+    for (idx = 0; idx < PB_LIST_LEN; idx++) {
 
         printf("protobuf encoding: (%lu, %lu)\n", idx, data[idx]);
 
@@ -62,6 +68,7 @@ int main (void)
 	uint8_t addr[] = {'E', 'F', 'C', 'L', 'I'};
 	uint8_t buf[20];
 
+	uint32_t count = 0;
 	uint8_t rf24_status;
 	int ret;
 
@@ -95,7 +102,8 @@ int main (void)
 		stream = pb_ostream_from_buffer(buf, sizeof(buf));
 
         message.sensor.funcs.encode = &sensor_callback;
-        message.sensor.arg = NULL;
+        message.sensor.arg = (void *)&count;
+		count++;
 
         pb_status = pb_encode(&stream, sensor_data_list_fields, &message);
         pb_len = stream.bytes_written;
