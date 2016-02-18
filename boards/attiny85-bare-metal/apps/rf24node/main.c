@@ -28,13 +28,14 @@ uint32_t temp;
 
 static bool sensor_callback(pb_ostream_t *stream, const pb_field_t *field, void * const *arg)
 {
+	uint32_t *dptr = (uint32_t *)(*arg);
     sensor_data sensor = {};
 
     uint32_t data[PB_LIST_LEN];
     uint32_t idx;
 
 	/* seq number */
-    data[0] = (uint32_t)(*arg);
+    data[0] = (uint32_t)(*dptr);
 
 	/* battery voltage */
     data[1] = volt;
@@ -177,7 +178,7 @@ int main (void)
 		stream = pb_ostream_from_buffer(buf, sizeof(buf));
 
         message.sensor.funcs.encode = &sensor_callback;
-        message.sensor.arg = (void *)count;
+        message.sensor.arg = (void *)&count;
 		count++;
 
         pb_status = pb_encode(&stream, sensor_data_list_fields, &message);
