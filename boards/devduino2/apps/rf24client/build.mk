@@ -34,10 +34,11 @@ LIBS = $(LIBNRF24)
 
 ## flags
 
-CFLAGS	= -Wall -O2 $(PFLAGS)
+CFLAGS	= -Wall $(PFLAGS)
 
 CFLAGS	+= -I$(PRJ_DIR)/include
 CFLAGS	+= -I$(PRJ_DIR)/boards/$(PLAT)/apps/rf24client
+
 CFLAGS	+= $(LIBNRF24_INC)
 
 LDFLAGS	= -Wl,-Map,$(PRG).map

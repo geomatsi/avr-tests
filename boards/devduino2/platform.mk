@@ -16,6 +16,8 @@ OBJDUMP	= $(CROSS_COMPILE)-objdump
 
 ## dependencies
 
+NRF24_CFG_FLAGS = -DNRF24_LOG_LEVEL=2 -DCONFIG_LIB_RF24_SIZEOPT
+
 deps: libnrf24 nanopb
 
 ## platform compile flags
@@ -23,7 +25,8 @@ deps: libnrf24 nanopb
 CHIP		= atmega328p
 CLK_FREQ    = 16000000L
 
-PFLAGS = -mmcu=$(CHIP) -DF_CPU=$(CLK_FREQ)
+PFLAGS = -mmcu=$(CHIP) -DF_CPU=$(CLK_FREQ) \
+	-Os -fshort-enums -ffunction-sections -Wl,--gc-sections
 
 ## platform flash flags
 
