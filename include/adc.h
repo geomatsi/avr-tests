@@ -3,6 +3,8 @@
 
 /* ADC single conversion mode */
 
+void adc_enable(void);
+void adc_disable(void);
 void adc_scm_init(uint8_t vref, uint8_t mux);
 uint16_t adc_scm_read(void);
 
