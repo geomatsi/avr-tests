@@ -27,36 +27,36 @@ FILE uart_stream = FDEV_SETUP_STREAM(uart_putchar, NULL, _FDEV_SETUP_WRITE);
 bool sensor_callback(pb_ostream_t *stream, const pb_field_t *field, void * const *arg)
 {
 	uint32_t *dptr = (uint32_t *)(*arg);
-    sensor_data sensor = {};
+	sensor_data sensor = {};
 
-    uint32_t data[PB_LIST_LEN];
-    uint32_t idx;
+	uint32_t data[PB_LIST_LEN];
+	uint32_t idx;
 
 	data[0] = (uint32_t)(*dptr);
-    data[1] = (uint32_t)read_vcc();
-    data[2] = (uint32_t)read_temp_mcp9700();
+	data[1] = (uint32_t)read_vcc();
+	data[2] = (uint32_t)read_temp_mcp9700();
 
-    for (idx = 0; idx < PB_LIST_LEN; idx++) {
+	for (idx = 0; idx < PB_LIST_LEN; idx++) {
 
-        printf("protobuf encoding: (%lu, %lu)\n", idx, data[idx]);
+		printf("protobuf encoding: (%lu, %lu)\n", idx, data[idx]);
 
-        sensor.type = idx;
-        sensor.data = data[idx];
+		sensor.type = idx;
+		sensor.data = data[idx];
 
-        /* Encode the header for the field, based on the constant info from pb_field_t */
-        if (!pb_encode_tag_for_field(stream, field)) {
+		/* Encode the header for the field, based on the constant info from pb_field_t */
+		if (!pb_encode_tag_for_field(stream, field)) {
 			printf("protobuf tag encoding failed: %s\n", PB_GET_ERROR(stream));
-            return false;
-        }
+			return false;
+		}
 
-        /* Encode the data for the field, based on our sensor_data structure */
-        if (!pb_encode_submessage(stream, sensor_data_fields, &sensor)) {
+		/* Encode the data for the field, based on our sensor_data structure */
+		if (!pb_encode_submessage(stream, sensor_data_fields, &sensor)) {
 			printf("protobuf submessage encoding failed: %s\n", PB_GET_ERROR(stream));
-            return false;
-        }
-    };
+			return false;
+		}
+	};
 
-    return true;
+	return true;
 }
 
 /* */
@@ -73,9 +73,9 @@ int main (void)
 	int ret;
 
 	sensor_data_list message = {};
-    pb_ostream_t stream;
-    bool pb_status;
-    size_t pb_len;
+	pb_ostream_t stream;
+	bool pb_status;
+	size_t pb_len;
 
 	stdout = &uart_stream;
 	stderr = &uart_stream;
@@ -101,12 +101,12 @@ int main (void)
 		memset(buf, 0x0, sizeof(buf));
 		stream = pb_ostream_from_buffer(buf, sizeof(buf));
 
-        message.sensor.funcs.encode = &sensor_callback;
-        message.sensor.arg = (void *)&count;
+		message.sensor.funcs.encode = &sensor_callback;
+		message.sensor.arg = (void *)&count;
 		count++;
 
-        pb_status = pb_encode(&stream, sensor_data_list_fields, &message);
-        pb_len = stream.bytes_written;
+		pb_status = pb_encode(&stream, sensor_data_list_fields, &message);
+		pb_len = stream.bytes_written;
 
 		if (!pb_status) {
 			printf("protobuf encoding failed: %s\n", PB_GET_ERROR(&stream));
@@ -121,7 +121,7 @@ int main (void)
 			rf24_status = rf24_flush_tx(nrf);
 		} else {
 			printf("written %d bytes\n", pb_len);
-        }
+		}
 
 		led_toggle(0);
 		delay_ms(1000);

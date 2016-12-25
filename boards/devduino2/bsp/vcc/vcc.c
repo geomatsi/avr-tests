@@ -9,7 +9,7 @@ long read_vcc(void)
 
 	/* select Vref = internal 1v1 , select Vin = A2(ADC2) */
 
-    adc_scm_init(0x3, 0x2);
+	adc_scm_init(0x3, 0x2);
 
 	/* XXX Limitation of this approach
 	 * Here we rely upon the fact that Vcc is less than 3.3v on devDuino2.
@@ -39,7 +39,7 @@ long read_vcc_alt(void)
 
 	/* select Vref = AVcc = Vcc, select Vin = internal 1v1 */
 
-    adc_scm_init(0x1, 0xe);
+	adc_scm_init(0x1, 0xe);
 
 	/* XXX Feature of this approach
 	 * In this approach Vref is Vcc. For some reason for Vref to settle.

@@ -9,7 +9,7 @@ long read_temp_mcp9700(void)
 
 	/* select Vref = internal 1v1, select Vin = A3(ADC3) */
 
-    adc_scm_init(0x3, 0x3);
+	adc_scm_init(0x3, 0x3);
 
 	/* XXX Limitation of this approach
 	 * Here we rely upon the fact that Vtemp is less than 1v1.

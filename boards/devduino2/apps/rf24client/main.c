@@ -52,7 +52,8 @@ int main (void)
 		printf("... temp = %ld\n", temp);
 
 		memset(buf, 0x0, sizeof(buf));
-		snprintf((char *) buf, sizeof(buf) - 1, "p%u:v[%ld]t[%ld]", (unsigned int) count++, vcc, temp);
+		snprintf((char *) buf, sizeof(buf) - 1, "p%u:v[%ld]t[%ld]",
+			 (unsigned int) count++, vcc, temp);
 		printf("xmit buffer: sizeof(%s) = %d\n", buf, sizeof(buf));
 
 		ret = rf24_write(nrf, buf, sizeof(buf));
