@@ -9,9 +9,9 @@
 
 CROSS_COMPILE = avr
 
-CC		= $(CROSS_COMPILE)-gcc
-LD		= $(CROSS_COMPILE)-ld
-OBJCOPY = $(CROSS_COMPILE)-objcopy
+CC	= $(CROSS_COMPILE)-gcc
+LD	= $(CROSS_COMPILE)-ld
+OBJCOPY	= $(CROSS_COMPILE)-objcopy
 OBJDUMP	= $(CROSS_COMPILE)-objdump
 
 ## dependencies
@@ -23,23 +23,37 @@ deps: libnrf24 nanopb
 ## platform compile flags
 
 CHIP		= atmega328p
-CLK_FREQ    = 16000000L
+CLK_FREQ	= 16000000L
 
 PFLAGS = -mmcu=$(CHIP) -DF_CPU=$(CLK_FREQ) \
 	-Os -fshort-enums -ffunction-sections -Wl,--gc-sections
 
-## platform flash flags
+## platform programming flags
 
-SERIAL_PORT = /dev/ttyUSB0
+# programming using arduino bootloader
+
+SERIAL_PORT	= /dev/ttyUSB0
 PROGRAMMER	= arduino
 BAUDRATE	= 57600
 
-DUDE_OPTIONS = \
-	-p $(CHIP)	\
+DUDE_OPTIONS_SERIAL =		\
+	-p $(CHIP)		\
 	-P $(SERIAL_PORT)	\
 	-c $(PROGRAMMER)	\
 	-b $(BAUDRATE)		\
 	-F
+
+# programming using ft232rl based ISP programmer
+
+FTDI_PORT = ft0
+PROGRAMMER  = arduino-ft232r
+FTDI_BBSYNC_RATE = 2400
+
+DUDE_OPTIONS_FT232RL =		\
+	-p $(CHIP)		\
+	-P $(FTDI_PORT)		\
+	-c $(PROGRAMMER)	\
+	-B $(FTDI_BBSYNC_RATE)
 
 ## projects for devduino2
 
@@ -63,5 +77,8 @@ endif
 
 ## upload rules
 
+upload-serial:
+	avrdude $(DUDE_OPTIONS_SERIAL) -U flash:w:out/firmware.hex
+
 upload:
-	avrdude $(DUDE_OPTIONS) -U flash:w:out/firmware.hex
+	avrdude $(DUDE_OPTIONS_FT232RL) -U flash:w:out/firmware.hex
