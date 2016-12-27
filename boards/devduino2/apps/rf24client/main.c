@@ -20,7 +20,6 @@ int main (void)
 	uint8_t buf[20];
 
 	uint32_t count = 0;
-	uint8_t status;
 	long vcc, temp;
 	int ret;
 
@@ -59,7 +58,8 @@ int main (void)
 		ret = rf24_write(nrf, buf, sizeof(buf));
 		if (ret) {
 			printf("write error: %d\n", ret);
-			status = rf24_flush_tx(nrf);
+			rf24_flush_tx(nrf);
+			rf24_flush_rx(nrf);
 		}
 
 		led_toggle(0);
