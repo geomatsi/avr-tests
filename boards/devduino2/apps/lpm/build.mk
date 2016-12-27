@@ -6,11 +6,13 @@
 
 VPATH += $(PRJ_DIR)/boards/$(PLAT)/apps/lpm
 VPATH += $(PRJ_DIR)/boards/$(PLAT)/bsp/leds
+VPATH += $(PRJ_DIR)/boards/$(PLAT)/bsp/adc
 
 ## sources
 
-LED_SRCS := \
-	main.c \
+LED_SRCS :=	\
+	main.c	\
+	adc.c	\
 	leds.c
 
 LED_OBJS := $(LED_SRCS:.c=.o)

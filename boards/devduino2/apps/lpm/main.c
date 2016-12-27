@@ -7,6 +7,36 @@
 #include <avr/wdt.h>
 
 #include "leds.h"
+#include "adc.h"
+
+/* */
+
+#define	lpm_bod_off(mode)			\
+	do {					\
+		set_sleep_mode(mode);		\
+		cli();				\
+		sleep_enable();			\
+		sleep_bod_disable();		\
+		sei();				\
+		sleep_cpu();			\
+		sleep_disable();		\
+		sei();				\
+	} while (0);
+
+#define wdt_setup(period)		\
+	do {				\
+		wdt_enable(period);	\
+		WDTCSR |= _BV(WDIE);	\
+	} while (0);
+
+
+
+ISR(WDT_vect)
+{
+	wdt_disable();
+}
+
+/* */
 
 #define blink(led, count, msec)		\
 do {					\
@@ -20,41 +50,27 @@ do {					\
 	}				\
 } while(0);
 
-
-ISR(WDT_vect)
-{
-	wdt_disable();
-}
+/* */
 
 int main (void)
 {
 
 	leds_init();
 
+	/* disable ADC and other peripherals */
+	adc_disable();
+	power_all_disable();
+
 	blink(0, 5, 100);
 
 	while (1){
-
-		/* disable ADC */
-		ADCSRA &= ~_BV(ADEN);
-
-		/* disable all peripherals */
-		power_all_disable();
-
 		/* setup watchdog timer and its interrupt */
-		wdt_enable(WDTO_8S);
-		WDTCSR |= _BV(WDIE);
+		wdt_setup(WDTO_8S);
 
 		/* power down mode with BOD off */
-		set_sleep_mode(SLEEP_MODE_PWR_DOWN);
-		cli();
-		sleep_enable();
-		sleep_bod_disable();
-		sei();
-		sleep_cpu();
-		sleep_disable();
-		sei();
+		lpm_bod_off(SLEEP_MODE_PWR_DOWN);
 
+		/* blink on wake up */
 		blink(0, 3, 500);
 	}
 
