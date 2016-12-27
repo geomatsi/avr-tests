@@ -1,4 +1,10 @@
+#include <avr/interrupt.h>
+#include <avr/power.h>
+#include <avr/sleep.h>
+#include <avr/wdt.h>
 #include <avr/io.h>
+
+#include <util/delay.h>
 #include <string.h>
 #include <stdio.h>
 
@@ -9,6 +15,7 @@
 
 #include "radio.h"
 #include "uart.h"
+#include "adc.h"
 
 #include "pb_encode.h"
 #include "pb_decode.h"
@@ -16,25 +23,61 @@
 
 /* */
 
-#define PB_LIST_LEN 3
-
-/* */
-
 FILE uart_stream = FDEV_SETUP_STREAM(uart_putchar, NULL, _FDEV_SETUP_WRITE);
 
 /* */
 
-bool sensor_callback(pb_ostream_t *stream, const pb_field_t *field, void * const *arg)
-{
-	uint32_t *dptr = (uint32_t *)(*arg);
-	sensor_data sensor = {};
+#define	lpm_bod_off(mode)			\
+	do {					\
+		set_sleep_mode(mode);		\
+		cli();				\
+		sleep_enable();			\
+		sleep_bod_disable();		\
+		sei();				\
+		sleep_cpu();			\
+		sleep_disable();		\
+		sei();				\
+	} while (0);
 
+#define wdt_setup(period)		\
+	do {				\
+		wdt_enable(period);	\
+		WDTCSR |= _BV(WDIE);	\
+	} while (0);
+
+ISR(WDT_vect)
+{
+	wdt_disable();
+}
+
+/* */
+
+#define blink(led, count, msec)		\
+do {					\
+	int c = count;			\
+	for (; c > 0; c--) {		\
+		led_on(led);		\
+		_delay_ms(msec);	\
+		led_off(led);		\
+		if (c)			\
+			_delay_ms(msec);\
+	}				\
+} while(0);
+
+/* */
+
+#define PB_LIST_LEN 2
+
+bool sensor_encode_callback(pb_ostream_t *stream, const pb_field_t *field, void * const *arg)
+{
 	uint32_t data[PB_LIST_LEN];
+	sensor_data sensor = {};
 	uint32_t idx;
 
-	data[0] = (uint32_t)(*dptr);
-	data[1] = (uint32_t)read_vcc();
-	data[2] = (uint32_t)read_temp_mcp9700();
+	data[0] = (uint32_t)read_vcc();
+	data[1] = (uint32_t)read_temp_mcp9700();
+
+	/* encode  sensor_data */
 
 	for (idx = 0; idx < PB_LIST_LEN; idx++) {
 
@@ -43,13 +86,11 @@ bool sensor_callback(pb_ostream_t *stream, const pb_field_t *field, void * const
 		sensor.type = idx;
 		sensor.data = data[idx];
 
-		/* Encode the header for the field, based on the constant info from pb_field_t */
 		if (!pb_encode_tag_for_field(stream, field)) {
 			printf("protobuf tag encoding failed: %s\n", PB_GET_ERROR(stream));
 			return false;
 		}
 
-		/* Encode the data for the field, based on our sensor_data structure */
 		if (!pb_encode_submessage(stream, sensor_data_fields, &sensor)) {
 			printf("protobuf submessage encoding failed: %s\n", PB_GET_ERROR(stream));
 			return false;
@@ -65,14 +106,20 @@ int main (void)
 {
 	struct rf24 *nrf;
 
+#if 1
 	uint8_t addr[] = {'E', 'F', 'C', 'L', 'I'};
-	uint8_t buf[20];
+	uint32_t node_id = 1001;
+#else
+	uint8_t addr[] = {'E', 'F', 'S', 'N', '1'};
+	uint32_t node_id = 1002;
+#endif
 
-	uint32_t count = 0;
-	uint8_t rf24_status;
+	uint8_t buf[32];
+
+	unsigned int count = 0;
 	int ret;
 
-	sensor_data_list message = {};
+	node_sensor_list message = {};
 	pb_ostream_t stream;
 	bool pb_status;
 	size_t pb_len;
@@ -84,6 +131,7 @@ int main (void)
 
 	printf("led_init...\n");
 	leds_init();
+	blink(0, 5, 100);
 
 	printf("radio_init...\n");
 	nrf = radio_init();
@@ -97,34 +145,49 @@ int main (void)
 	rf24_power_up(nrf);
 
 	while (1){
-
+		printf("send pkt #%u\n", ++count);
 		memset(buf, 0x0, sizeof(buf));
 		stream = pb_ostream_from_buffer(buf, sizeof(buf));
 
-		message.sensor.funcs.encode = &sensor_callback;
-		message.sensor.arg = (void *)&count;
-		count++;
+		/* static message part */
+		message.node.node = node_id;
 
-		pb_status = pb_encode(&stream, sensor_data_list_fields, &message);
+		/* repeated message part */
+		message.sensor.funcs.encode = &sensor_encode_callback;
+
+		pb_status = pb_encode(&stream, node_sensor_list_fields, &message);
 		pb_len = stream.bytes_written;
 
 		if (!pb_status) {
-			printf("protobuf encoding failed: %s\n", PB_GET_ERROR(&stream));
+			printf("nanopb encoding failed: %s\n", PB_GET_ERROR(&stream));
 		} else {
-			printf("protobuf encoded %u bytes\n", pb_len);
+			printf("nanopb encoded %u bytes\n", pb_len);
 		}
 
 
 		ret = rf24_write(nrf, buf, pb_len);
 		if (ret) {
 			printf("write error: %d\n", ret);
-			rf24_status = rf24_flush_tx(nrf);
+			rf24_flush_tx(nrf);
+			rf24_flush_rx(nrf);
 		} else {
 			printf("written %d bytes\n", pb_len);
 		}
 
-		led_toggle(0);
-		delay_ms(1000);
+		/* enable power-down mode */
+
+		adc_disable();
+		power_all_disable();
+
+		wdt_setup(WDTO_8S);
+		lpm_bod_off(SLEEP_MODE_PWR_DOWN);
+
+		power_usart0_enable();
+		power_adc_enable();
+		power_spi_enable();
+		adc_enable();
+
+		blink(0, 3, 500);
 	}
 
 	return 1;

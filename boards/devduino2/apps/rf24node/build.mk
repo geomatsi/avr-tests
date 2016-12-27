@@ -18,9 +18,7 @@ VPATH += $(PRJ_DIR)/boards/$(PLAT)/bsp/temp
 ## protobuf
 
 PROTOC ?= protoc
-
 PROTOBUF_SRC = $(PRJ_DIR)/boards/$(PLAT)/apps/rf24node/protobuf
-PROTOBUF_DST = $(OBJ_DIR)
 
 ## sources
 
@@ -47,17 +45,14 @@ LIBS = $(LIBNRF24)
 
 ## flags
 
-CFLAGS	= -Wall $(PFLAGS)
+CFLAGS	= -Wall -Werror $(PFLAGS)
 
 # tweak nanopb to fit into attiny
 CFLAGS += -DPB_BUFFER_ONLY -DPB_NO_ERRMSG
 
-CFLAGS	+= -I$(PRJ_DIR)/include
-CFLAGS	+= -I$(PRJ_DIR)/boards/$(PLAT)/apps/rf24node
-CFLAGS	+= -I$(PRJ_DIR)/boards/$(PLAT)/apps/rf24node/protobuf
-
 CFLAGS	+= $(LIBNRF24_INC) $(NANOPB_INC)
-CFLAGS	+= -I$(PROTOBUF_DST)
+CFLAGS	+= -I$(PRJ_DIR)/include
+CFLAGS	+= -I$(OBJ_DIR)/nanopb
 
 LDFLAGS	= -Wl,-Map,$(PRG).map
 
@@ -76,12 +71,13 @@ rf24node: $(OBJ_DIR)/rf24node.hex $(OBJ_DIR)/rf24node.bin
 $(OBJ_DIR)/rf24node.elf: $(NODE_OBJS) $(LIBS)
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(NODE_OBJS) $(LIBS)
 
-$(OBJ_DIR)/%.o: %.c $(PROTOBUF_DST)/msg.pb.h
+$(OBJ_DIR)/%.o: %.c $(OBJ_DIR)/msg.pb.h
 	mkdir -p $(dir $@)
 	$(CC) -c $(CFLAGS) -o $@ $<
 
-$(PROTOBUF_DST)/%.pb.c $(PROTOBUF_DST)/%.pb.h: $(PROTOBUF_SRC)/%.proto
-	mkdir -p $(PROTOBUF_DST)
-	$(PROTOC) --proto_path=$(PROTOBUF_SRC) -o $(PROTOBUF_SRC)/$*.pb $(PROTOBUF_SRC)/$*.proto
-	python $(TOP_DIR)/nanopb/generator/nanopb_generator.py $(PROTOBUF_SRC)/$*.pb
-	mv $(PROTOBUF_SRC)/msg.pb* $(PROTOBUF_DST)
+$(OBJ_DIR)/%.pb.c $(OBJ_DIR)/%.pb.h: $(PROTOBUF_SRC)/%.proto
+	mkdir -p $(OBJ_DIR)/nanopb
+	$(PROTOC) --proto_path=$(PROTOBUF_SRC) -o $(OBJ_DIR)/$*.pb $(PROTOBUF_SRC)/$*.proto
+	python $(TOP_DIR)/nanopb/generator/nanopb_generator.py $(OBJ_DIR)/$*.pb
+	# FIXME: why msg.pb.h is removed unless stored in another directory ?
+	mv $(OBJ_DIR)/msg.pb.h $(OBJ_DIR)/nanopb
