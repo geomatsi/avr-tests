@@ -14,8 +14,8 @@
 
 CROSS_COMPILE = avr
 
-CC		= $(CROSS_COMPILE)-gcc
-LD		= $(CROSS_COMPILE)-ld
+CC	= $(CROSS_COMPILE)-gcc
+LD	= $(CROSS_COMPILE)-ld
 OBJCOPY = $(CROSS_COMPILE)-objcopy
 OBJDUMP	= $(CROSS_COMPILE)-objdump
 
@@ -35,15 +35,29 @@ PFLAGS = -mmcu=$(CHIP) -DF_CPU=$(CLK_FREQ) \
 
 ## platform flash flags
 
+# UM232H programmer
+
 SERIAL_PORT = /dev/ttyUSB0
-PROGRAMMER	= UM232H
+PROGRAMMER_UM232H = UM232H
 SPI_BIT_CLK = 100000
 
-DUDE_OPTIONS = \
-	-p $(CHIP)	\
+DUDE_OPTIONS_UM232H =		\
+	-p $(CHIP)		\
 	-P $(SERIAL_PORT)	\
-	-c $(PROGRAMMER)	\
+	-c $(PROGRAMMER_UM232H)	\
 	-b $(SPI_BIT_CLK)
+
+# FT232RL programmer
+
+FTDI_PORT = ft0
+PROGRAMMER_FT232RL  = arduino-ft232r
+FTDI_BBSYNC_RATE = 2400
+
+DUDE_OPTIONS_FT232RL =		\
+	-p $(CHIP)		\
+	-P $(FTDI_PORT)		\
+	-c $(PROGRAMMER_FT232RL)\
+	-B $(FTDI_BBSYNC_RATE)
 
 ## projects for arduino-mini
 
@@ -83,8 +97,13 @@ endif
 
 ## upload rules
 
-upload:
-	avrdude $(DUDE_OPTIONS) -U flash:w:out/firmware.hex
+upload: upload-ft232rl
+
+upload-ft232rl:
+	avrdude $(DUDE_OPTIONS_FT232RL) -U flash:w:out/firmware.hex -U lfuse:w:0x62:m -U hfuse:w:0xdf:m -U efuse:w:0xff:m
+
+upload-um232h:
+	avrdude $(DUDE_OPTIONS_UM232H) -U flash:w:out/firmware.hex -U lfuse:w:0x62:m -U hfuse:w:0xdf:m -U efuse:w:0xff:m
 
 # Fuse bits:
 #	- to set 8MHz:  -U lfuse:w:0xe2:m -U hfuse:w:0xdf:m -U efuse:w:0xff:m
