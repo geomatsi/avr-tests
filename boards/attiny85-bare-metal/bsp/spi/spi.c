@@ -19,17 +19,17 @@ void spi_init(void)
 {
 
 	/* set the USCK pin as output */
-    DDRB |= _BV(DDB2);
+	DDRB |= _BV(DDB2);
 
 	/* set the DO pin as output */
-    DDRB |= _BV(DDB1);
+	DDRB |= _BV(DDB1);
 
 	/* set the DI pin as input */
-    DDRB &= ~_BV(DDB0);
+	DDRB &= ~_BV(DDB0);
 
 	/* setup USI */
-    USICR &= ~(_BV(USISIE) | _BV(USIOIE) | _BV(USIWM1));
-    USICR |= _BV(USIWM0) | _BV(USICS1) | _BV(USICLK);
+	USICR &= ~(_BV(USISIE) | _BV(USIOIE) | _BV(USIWM1));
+	USICR |= _BV(USIWM0) | _BV(USICS1) | _BV(USICLK);
 }
 
 void spi_set_mode(uint8_t mode)
@@ -56,21 +56,21 @@ void spi_set_mode(uint8_t mode)
 void spi_deinit(void)
 {
 	/* turn off USI */
-    USICR &= ~(_BV(USIWM1) | _BV(USIWM0));
+	USICR &= ~(_BV(USIWM1) | _BV(USIWM0));
 }
 
 uint8_t spi_fast_shift(uint8_t data)
 {
-    USIDR = data;
+	USIDR = data;
 
 	/* clear counter and counter overflow interrupt flag */
-    USISR = _BV(USIOIF);
+	USISR = _BV(USIOIF);
 
-    ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
 		/* ensure a consistent clock period */
-        while ( !(USISR & _BV(USIOIF)) )
+		while ( !(USISR & _BV(USIOIF)) )
 			USICR |= _BV(USITC);
-    }
+	}
 
-    return USIDR;
+	return USIDR;
 }

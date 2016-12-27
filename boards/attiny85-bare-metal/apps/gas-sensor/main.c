@@ -8,23 +8,23 @@
 
 int main(void)
 {
-    uint32_t v;
+	uint32_t v;
 
 	/* init s/w uart (PB0=RX PB1 = TX): NB TX only for debug purposes */
-    uart_init();
+	uart_init();
 
-    /* re-define PB0 as LED, set it to zero */
+	/* re-define PB0 as LED, set it to zero */
 	DDRB |= (1 << DDB0);
-    PORTB &= ~(1 << PB0);
+	PORTB &= ~(1 << PB0);
 
-    /* set PB2 as ALERT OUTPUT, set it to zero */
+	/* set PB2 as ALERT OUTPUT, set it to zero */
 	DDRB |= (1 << DDB2);
-    PORTB &= ~(1 << PB2);
+	PORTB &= ~(1 << PB2);
 
-    /* init adc: Vref = Vcc = 5v0, select A2(PB4) input channel */
-    adc_scm_init(0, 2);
+	/* init adc: Vref = Vcc = 5v0, select A2(PB4) input channel */
+	adc_scm_init(0, 2);
 
-    /* main loop */
+	/* main loop */
 	while (1) {
 		/* toggle LED */
 		PORTB ^= (1 << PB0);

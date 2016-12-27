@@ -3,14 +3,15 @@
 
 #include "leds.h"
 
-int main (void){
+int main (void)
+{
 
 	leds_init();
 
-    while (1) {
-        led_toggle(0);
-        _delay_ms(500);
-    }
+	while (1) {
+		led_toggle(0);
+		_delay_ms(500);
+	}
 
-    return 1;
+	return 1;
 }

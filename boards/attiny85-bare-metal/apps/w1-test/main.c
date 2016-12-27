@@ -13,15 +13,15 @@ int main(void)
 	int temp;
 	bool ret;
 
-    /* init s/w uart: NB PB0=RX PB1=TX */
+	/* init s/w uart: NB PB0=RX PB1=TX */
 
-    uart_init();
+	uart_init();
 
 	if (!ds18b20_set_res(R12BIT)) {
 		printf("WARN: couldn't set resolution\n");
 	}
 
-    /* main loop */
+	/* main loop */
 
 	while (1) {
 

@@ -16,7 +16,7 @@ int main (void)
 	int temp;
 	bool ret;
 
-    uart_init();
+	uart_init();
 
 	if (!ds18b20_set_res(R12BIT)) {
 		printf("WARN: couldn't set resolution\n");
@@ -78,5 +78,5 @@ int main (void)
 		delay_ms(2000);
 	}
 
-    return 0;
+	return 0;
 }

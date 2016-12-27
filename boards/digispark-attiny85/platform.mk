@@ -11,8 +11,8 @@
 
 CROSS_COMPILE = avr
 
-CC		= $(CROSS_COMPILE)-gcc
-LD		= $(CROSS_COMPILE)-ld
+CC	= $(CROSS_COMPILE)-gcc
+LD	= $(CROSS_COMPILE)-ld
 OBJCOPY = $(CROSS_COMPILE)-objcopy
 OBJDUMP	= $(CROSS_COMPILE)-objdump
 

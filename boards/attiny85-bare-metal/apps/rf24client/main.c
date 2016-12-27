@@ -11,9 +11,9 @@
 
 void led_init(void)
 {
-    /* define PB3 as LED, set it to zero */
+	/* define PB3 as LED, set it to zero */
 	DDRB |= (1 << DDB3);
-    PORTB &= ~(1 << PB3);
+	PORTB &= ~(1 << PB3);
 }
 
 void led_toggle()
@@ -82,7 +82,7 @@ int main (void)
 		ret = rf24_write(nrf, buf, sizeof(buf));
 		if (ret) {
 			rf24_status = rf24_flush_tx(nrf);
-        }
+		}
 
 		led_toggle();
 		delay_ms(1000);

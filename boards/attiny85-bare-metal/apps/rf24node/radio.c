@@ -5,9 +5,9 @@
 
 static void spi_pin_init(void)
 {
-    /* NRF24 CSN: PB4 GPIO */
+	/* NRF24 CSN: PB4 GPIO */
 	DDRB |= (1 << DDB4);
-    PORTB &= ~(1 << PB4);
+	PORTB &= ~(1 << PB4);
 
 	/* NRF24 CE: wired to VCC in hardware */
 }

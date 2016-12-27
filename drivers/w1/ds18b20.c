@@ -79,5 +79,3 @@ int ds18b20_get_temp(uint8_t msb, uint8_t lsb)
 
 	return temp;
 }
-
-

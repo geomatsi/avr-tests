@@ -8,41 +8,41 @@
 
 int main(void)
 {
-    uint32_t v;
+	uint32_t v;
 
-    /* init s/w uart: NB PB0=RX PB1=TX */
+	/* init s/w uart: NB PB0=RX PB1=TX */
 
-    uart_init();
+	uart_init();
 
-    /* set PB2 as output and turn on LED */
+	/* set PB2 as output and turn on LED */
 
 	DDRB |= (1 << DDB2);
-    PORTB |= (1 << PB2);
+	PORTB |= (1 << PB2);
 
-    /* init adc: Vref = Vcc = 5v0, select A2(PB4) channel */
+	/* init adc: Vref = Vcc = 5v0, select A2(PB4) channel */
 
-    adc_scm_init(0, 2);
+	adc_scm_init(0, 2);
 
-    /* main loop */
+	/* main loop */
 
-    while(1)
-    {
-        /* toggle LED */
+	while(1)
+	{
+		/* toggle LED */
 
-        PORTB ^= (1 << PB2);
+		PORTB ^= (1 << PB2);
 
-        /* read adc */
+		/* read adc */
 
-        v = adc_scm_read();
+		v = adc_scm_read();
 
-        /* translate adc measurement to voltage according to Vref = VCC */
+		/* translate adc measurement to voltage according to Vref = VCC */
 
-        v = v * 5000 / 1024;
+		v = v * 5000 / 1024;
 
-        /* */
+		/* */
 
-        printf("%u\n", (unsigned int) v);
-        _delay_ms(500);
-    }
+		printf("%u\n", (unsigned int) v);
+		_delay_ms(500);
+	}
 
 }
