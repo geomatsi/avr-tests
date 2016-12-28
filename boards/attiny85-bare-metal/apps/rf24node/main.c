@@ -17,7 +17,7 @@
 
 /* */
 
-#define PB_LIST_LEN	3
+#define PB_LIST_LEN	2
 
 /* */
 
@@ -26,34 +26,26 @@ uint32_t temp;
 
 /* */
 
-static bool sensor_callback(pb_ostream_t *stream, const pb_field_t *field, void * const *arg)
+static bool sensor_encode_callback(pb_ostream_t *stream, const pb_field_t *field, void * const *arg)
 {
-	uint32_t *dptr = (uint32_t *)(*arg);
 	sensor_data sensor = {};
-
 	uint32_t data[PB_LIST_LEN];
 	uint32_t idx;
 
-	/* seq number */
-	data[0] = (uint32_t)(*dptr);
+	data[0] = volt;
+	data[1] = temp;
 
-	/* battery voltage */
-	data[1] = volt;
-
-	/* temperature */
-	data[2] = temp;
+	/* encode sensor_data */
 
 	for (idx = 0; idx < PB_LIST_LEN; idx++) {
 
 		sensor.type = idx;
 		sensor.data = data[idx];
 
-		/* Encode the header for the field, based on the constant info from pb_field_t */
 		if (!pb_encode_tag_for_field(stream, field)) {
 			return false;
 		}
 
-		/* Encode the data for the field, based on our sensor_data structure */
 		if (!pb_encode_submessage(stream, sensor_data_fields, &sensor)) {
 			return false;
 		}
@@ -141,19 +133,22 @@ uint32_t get_battery_voltage(void)
 int main (void)
 {
 	struct rf24 *nrf;
-
-	uint8_t addr[] = {'E', 'F', 'C', 'L', 'I'};
-	uint8_t buf[32];
-
-	uint8_t rf24_status;
 	int ret;
 
-	sensor_data_list message = {};
+#if 0
+	uint8_t addr[] = {'E', 'F', 'C', 'L', 'I'};
+	uint32_t node_id = 1001;
+#else
+	uint8_t addr[] = {'E', 'F', 'S', 'N', '1'};
+	uint32_t node_id = 1002;
+#endif
+
+	uint8_t buf[32];
+
+	node_sensor_list message = {};
 	pb_ostream_t stream;
 	bool pb_status;
 	size_t pb_len;
-
-	uint32_t count = 0;
 
 	/* */
 
@@ -177,11 +172,13 @@ int main (void)
 		memset(buf, 0x0, sizeof(buf));
 		stream = pb_ostream_from_buffer(buf, sizeof(buf));
 
-		message.sensor.funcs.encode = &sensor_callback;
-		message.sensor.arg = (void *)&count;
-		count++;
+		/* static message part */
+		message.node.node = node_id;
 
-		pb_status = pb_encode(&stream, sensor_data_list_fields, &message);
+		/* repeated message part */
+		message.sensor.funcs.encode = &sensor_encode_callback;
+
+		pb_status = pb_encode(&stream, node_sensor_list_fields, &message);
 		pb_len = stream.bytes_written;
 
 		if (!pb_status) {
@@ -190,13 +187,14 @@ int main (void)
 
 		ret = rf24_write(nrf, buf, pb_len);
 		if (ret) {
-			rf24_status = rf24_flush_tx(nrf);
+			rf24_flush_tx(nrf);
+			rf24_flush_rx(nrf);
 		}
 
 		volt = get_battery_voltage();
 		temp = get_temp();
 
-		_delay_ms(500);
+		_delay_ms(1000);
 		/* NB: additional delay - get_temp takes > 1sec */
 	}
 
