@@ -5,6 +5,16 @@
 
 /* ADC: single conversion mode */
 
+void adc_enable(void)
+{
+	ADCSRA |= _BV(ADEN);
+}
+
+void adc_disable(void)
+{
+	ADCSRA &= ~_BV(ADEN);
+}
+
 void adc_scm_init(uint8_t vref, uint8_t mux)
 {
 	/* Simple ADMUX setup: no complete spec coverage
