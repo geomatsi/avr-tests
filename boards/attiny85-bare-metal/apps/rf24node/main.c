@@ -1,4 +1,8 @@
+#include <avr/interrupt.h>
 #include <util/delay.h>
+#include <avr/power.h>
+#include <avr/sleep.h>
+#include <avr/wdt.h>
 #include <avr/io.h>
 #include <string.h>
 #include <stdio.h>
@@ -14,6 +18,31 @@
 #include "pb_encode.h"
 #include "pb_decode.h"
 #include "msg.pb.h"
+
+/* */
+
+#define	lpm_bod_off(mode)			\
+	do {					\
+		set_sleep_mode(mode);		\
+		cli();				\
+		sleep_enable();			\
+		sleep_bod_disable();		\
+		sei();				\
+		sleep_cpu();			\
+		sleep_disable();		\
+		sei();				\
+	} while (0);
+
+#define wdt_setup(period)		\
+	do {				\
+		wdt_enable(period);	\
+		WDTCR |= _BV(WDIE);	\
+	} while (0);
+
+ISR(WDT_vect)
+{
+	wdt_disable();
+}
 
 /* */
 
@@ -135,12 +164,12 @@ int main (void)
 	struct rf24 *nrf;
 	int ret;
 
-#if 0
+#if 1
 	uint8_t addr[] = {'E', 'F', 'C', 'L', 'I'};
-	uint32_t node_id = 1001;
+	uint32_t node_id = 1003;
 #else
 	uint8_t addr[] = {'E', 'F', 'S', 'N', '1'};
-	uint32_t node_id = 1002;
+	uint32_t node_id = 1004;
 #endif
 
 	uint8_t buf[32];
@@ -190,6 +219,20 @@ int main (void)
 			rf24_flush_tx(nrf);
 			rf24_flush_rx(nrf);
 		}
+
+		/* enable power-down mode */
+
+		adc_disable();
+		power_all_disable();
+
+		wdt_setup(WDTO_8S);
+		lpm_bod_off(SLEEP_MODE_PWR_DOWN);
+
+		power_adc_enable();
+		power_usi_enable();
+		adc_enable();
+
+		/* get new measurements */
 
 		volt = get_battery_voltage();
 		temp = get_temp();
