@@ -15,13 +15,13 @@ FILE uart_stream = FDEV_SETUP_STREAM(uart_putchar, NULL, _FDEV_SETUP_WRITE);
 int main (void)
 {
 	struct rf24 *nrf;
+	enum rf24_tx_status ret;
 
 	uint8_t addr[] = {'E', 'F', 'C', 'L', 'I'};
 	uint8_t buf[20];
 
 	uint32_t count = 0;
 	long vcc, temp;
-	int ret;
 
 	stdout = &uart_stream;
 	stderr = &uart_stream;
@@ -36,11 +36,10 @@ int main (void)
 
 	delay_ms(500);
 
-	rf24_stop_listening(nrf);
 	rf24_set_payload_size(nrf, sizeof(buf));
 	rf24_set_retries(nrf, 10 /* retry delay 2500us */, 5 /* retries */);
-	rf24_open_writing_pipe(nrf, addr);
-	rf24_power_up(nrf);
+	rf24_setup_ptx(nrf, addr);
+	rf24_start_ptx(nrf);
 
 	while (1){
 
@@ -55,9 +54,10 @@ int main (void)
 			 (unsigned int) count++, vcc, temp);
 		printf("xmit buffer: sizeof(%s) = %d\n", buf, sizeof(buf));
 
-		ret = rf24_write(nrf, buf, sizeof(buf));
-		if (ret) {
-			printf("write error: %d\n", ret);
+
+		ret = rf24_send(nrf, buf, sizeof(buf));
+		if (ret != RF24_TX_OK) {
+			printf("send error: %d\n", ret);
 			rf24_flush_tx(nrf);
 			rf24_flush_rx(nrf);
 		}

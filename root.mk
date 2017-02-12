@@ -23,18 +23,18 @@ all: info
 
 SOFTUART_LIB_DIR	= softuart
 LIBSOFTUART_INC		= -I$(SOFTUART_LIB_DIR)
-LIBSOFTUART			= $(SOFTUART_LIB_DIR)/libsoftuart_$(CHIP).a
+LIBSOFTUART		= $(SOFTUART_LIB_DIR)/libsoftuart_$(CHIP).a
 
 # libnrf24
 
 NRF24_LIB_DIR	= libnrf24
 LIBNRF24_INC	= -I$(NRF24_LIB_DIR)/include
-LIBNRF24		= $(NRF24_LIB_DIR)/libnrf24_$(CHIP).a
+LIBNRF24	= $(NRF24_LIB_DIR)/libnrf24_$(CHIP).a
 
 # nanopb
 
-NANOPB_DIR		= nanopb
-NANOPB_INC		= -I$(NANOPB_DIR)
+NANOPB_DIR	= nanopb
+NANOPB_INC	= -I$(NANOPB_DIR)
 
 ## target specific definitions
 
@@ -59,7 +59,7 @@ libsoftuart:
 
 libnrf24:
 	make -C libnrf24 \
-		CROSS_COMPILE=$(CROSS_COMPILE) \
+		CROSS_COMPILE=$(CROSS_COMPILE)- \
 		TARGET=$(CHIP) \
 		PLT_FLAGS="$(PFLAGS)" \
 		CFG_FLAGS="$(NRF24_CFG_FLAGS)"

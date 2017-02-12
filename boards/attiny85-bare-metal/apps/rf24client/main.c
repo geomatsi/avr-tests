@@ -48,12 +48,10 @@ void led_blink(uint16_t count, uint16_t delay)
 int main (void)
 {
 	struct rf24 *nrf;
+	enum rf24_tx_status ret;
 
 	uint8_t addr[] = {'E', 'F', 'C', 'L', 'I'};
 	uint8_t buf[20];
-
-	uint8_t rf24_status;
-	int ret;
 
 	uint32_t count = 0;
 
@@ -66,11 +64,10 @@ int main (void)
 
 	delay_ms(500);
 
-	rf24_stop_listening(nrf);
 	rf24_set_payload_size(nrf, sizeof(buf));
 	rf24_set_retries(nrf, 10 /* retry delay 2500us */, 5 /* retries */);
-	rf24_open_writing_pipe(nrf, addr);
-	rf24_power_up(nrf);
+	rf24_setup_ptx(nrf, addr);
+	rf24_start_ptx(nrf);
 
 	led_blink(3, 100);
 
@@ -79,9 +76,11 @@ int main (void)
 		memset(buf, 0x0, sizeof(buf));
 		snprintf((char *) buf, sizeof(buf) - 1, "p:%u", (unsigned int)count++);
 
-		ret = rf24_write(nrf, buf, sizeof(buf));
-		if (ret) {
-			rf24_status = rf24_flush_tx(nrf);
+		ret = rf24_send(nrf, buf, sizeof(buf));
+		if (ret != RF24_TX_OK) {
+			/* send error */
+			rf24_flush_tx(nrf);
+			rf24_flush_rx(nrf);
 		}
 
 		led_toggle();

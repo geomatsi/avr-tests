@@ -162,7 +162,7 @@ uint32_t get_battery_voltage(void)
 int main (void)
 {
 	struct rf24 *nrf;
-	int ret;
+	enum rf24_tx_status ret;
 
 #if 1
 	uint8_t addr[] = {'E', 'F', 'C', 'L', 'I'};
@@ -190,11 +190,10 @@ int main (void)
 
 	delay_ms(500);
 
-	rf24_stop_listening(nrf);
-	rf24_enable_dynamic_payloads(nrf);
+	rf24_enable_dyn_payload(nrf);
 	rf24_set_retries(nrf, 10 /* retry delay 2500us */, 5 /* retries */);
-	rf24_open_writing_pipe(nrf, addr);
-	rf24_power_up(nrf);
+	rf24_setup_ptx(nrf, addr);
+	rf24_start_ptx(nrf);
 
 	while (1) {
 
@@ -214,8 +213,9 @@ int main (void)
 			/* FIXME */
 		}
 
-		ret = rf24_write(nrf, buf, pb_len);
-		if (ret) {
+		ret = rf24_send(nrf, buf, pb_len);
+		if (ret != RF24_TX_OK) {
+			/* send error */
 			rf24_flush_tx(nrf);
 			rf24_flush_rx(nrf);
 		}

@@ -48,11 +48,6 @@ void f_ce(int level)
 	}
 }
 
-void f_spi_set_speed(int khz)
-{
-	/* not implemented */
-}
-
 uint8_t f_spi_xfer(uint8_t dat)
 {
 	return spi_fast_shift(dat);
@@ -61,7 +56,6 @@ uint8_t f_spi_xfer(uint8_t dat)
 struct rf24 nrf = {
 	.csn = f_csn,
 	.ce = f_ce,
-	.spi_set_speed = f_spi_set_speed,
 	.spi_xfer = f_spi_xfer,
 };
 

@@ -102,9 +102,10 @@ bool sensor_encode_callback(pb_ostream_t *stream, const pb_field_t *field, void 
 
 /* */
 
-int main (void)
+int main(void)
 {
 	struct rf24 *nrf;
+	enum rf24_tx_status ret;
 
 #if 1
 	uint8_t addr[] = {'E', 'F', 'C', 'L', 'I'};
@@ -117,7 +118,6 @@ int main (void)
 	uint8_t buf[32];
 
 	unsigned int count = 0;
-	int ret;
 
 	node_sensor_list message = {};
 	pb_ostream_t stream;
@@ -138,11 +138,11 @@ int main (void)
 
 	delay_ms(500);
 
-	rf24_stop_listening(nrf);
-	rf24_enable_dynamic_payloads(nrf);
+
+	rf24_enable_dyn_payload(nrf);
 	rf24_set_retries(nrf, 10 /* retry delay 2500us */, 5 /* retries */);
-	rf24_open_writing_pipe(nrf, addr);
-	rf24_power_up(nrf);
+	rf24_setup_ptx(nrf, addr);
+	rf24_start_ptx(nrf);
 
 	while (1){
 		printf("send pkt #%u\n", ++count);
@@ -165,8 +165,8 @@ int main (void)
 		}
 
 
-		ret = rf24_write(nrf, buf, pb_len);
-		if (ret) {
+		ret = rf24_send(nrf, buf, pb_len);
+		if (ret != RF24_TX_OK) {
 			printf("write error: %d\n", ret);
 			rf24_flush_tx(nrf);
 			rf24_flush_rx(nrf);
