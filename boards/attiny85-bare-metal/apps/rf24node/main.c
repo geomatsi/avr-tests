@@ -191,7 +191,13 @@ int main (void)
 	delay_ms(500);
 
 	rf24_enable_dyn_payload(nrf);
-	rf24_set_retries(nrf, 10 /* retry delay 2500us */, 5 /* retries */);
+	rf24_set_retries(nrf, 0xf /* retry delay 4000us */, 5 /* retries */);
+
+	rf24_set_channel(nrf, 10);
+	rf24_set_data_rate(nrf, RF24_RATE_250K);
+	rf24_set_crc_mode(nrf, RF24_CRC_16_BITS);
+	rf24_set_pa_level(nrf, RF24_PA_MAX);
+
 	rf24_setup_ptx(nrf, addr);
 	rf24_start_ptx(nrf);
 
