@@ -47,7 +47,7 @@ int main (void)
 	rf24_setup_ptx(nrf, addr);
 	rf24_start_ptx(nrf);
 
-	while (1){
+	while (1) {
 
 		vcc = read_vcc();
 		printf("... vcc = %ld\n", vcc);

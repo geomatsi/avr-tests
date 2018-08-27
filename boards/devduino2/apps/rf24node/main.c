@@ -138,7 +138,6 @@ int main(void)
 
 	delay_ms(500);
 
-
 	rf24_enable_dyn_payload(nrf);
 	rf24_set_retries(nrf, 0xf /* retry delay 4000us */, 5 /* retries */);
 
@@ -150,7 +149,7 @@ int main(void)
 	rf24_setup_ptx(nrf, addr);
 	rf24_start_ptx(nrf);
 
-	while (1){
+	while (1) {
 		printf("send pkt #%u\n", ++count);
 		memset(buf, 0x0, sizeof(buf));
 		stream = pb_ostream_from_buffer(buf, sizeof(buf));
