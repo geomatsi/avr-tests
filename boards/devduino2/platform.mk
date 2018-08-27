@@ -55,6 +55,14 @@ DUDE_OPTIONS_FT232RL =		\
 	-c $(PROGRAMMER)	\
 	-B $(FTDI_BBSYNC_RATE)
 
+# programming using ft232rl based ISP programmer
+
+PROGRAMMER  = usbasp
+
+DUDE_OPTIONS_USBASP =		\
+	-p $(CHIP)		\
+	-c $(PROGRAMMER)
+
 ## projects for devduino2
 
 TARGETS = "led uart rf24client rf24node lpm"
@@ -84,5 +92,10 @@ endif
 upload-serial:
 	avrdude $(DUDE_OPTIONS_SERIAL) -U flash:w:out/firmware.hex
 
-upload:
+upload-ft232rl:
 	avrdude $(DUDE_OPTIONS_FT232RL) -U flash:w:out/firmware.hex
+
+upload-usbasp:
+	avrdude $(DUDE_OPTIONS_USBASP) -U flash:w:out/firmware.hex
+
+upload: upload-usbasp
