@@ -5,6 +5,7 @@
 ## paths
 
 VPATH += $(TOP_DIR)/nanopb
+VPATH += $(PRJ_DIR)/drivers/dht
 
 VPATH += $(PRJ_DIR)/boards/$(PLAT)/apps/rf24node
 VPATH += $(PRJ_DIR)/boards/$(PLAT)/apps/rf24node/protobuf
@@ -31,6 +32,7 @@ NODE_SRCS := \
 	radio.c \
 	vcc.c	\
 	adc.c	\
+	dht.c	\
 	temp_mcp9700.c \
 	pb_common.c \
 	pb_encode.c \
@@ -51,6 +53,7 @@ CFLAGS	= -Wall -Werror $(PFLAGS)
 CFLAGS += -DPB_BUFFER_ONLY -DPB_NO_ERRMSG
 
 CFLAGS	+= $(LIBNRF24_INC) $(NANOPB_INC)
+CFLAGS  += -I$(PRJ_DIR)/boards/$(PLAT)/apps/rf24node
 CFLAGS	+= -I$(PRJ_DIR)/include
 CFLAGS	+= -I$(OBJ_DIR)/nanopb
 

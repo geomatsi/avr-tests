@@ -21,6 +21,8 @@
 #include "pb_decode.h"
 #include "msg.pb.h"
 
+#include "dht.h"
+
 /* */
 
 FILE uart_stream = FDEV_SETUP_STREAM(uart_putchar, NULL, _FDEV_SETUP_WRITE);
@@ -64,38 +66,79 @@ do {					\
 	}				\
 } while(0);
 
-/* */
+/*
+ * current list of sensors: 4
+ *   - VCC voltage using ADC
+ *   - built-in MCP9700 using ADC
+ *   - DHT11: temperature
+ *   - DHT11: humidity
+ */
 
-#define PB_LIST_LEN 2
+#define NUM_SENSORS	4
 
 bool sensor_encode_callback(pb_ostream_t *stream, const pb_field_t *field, void * const *arg)
 {
-	uint32_t data[PB_LIST_LEN];
 	sensor_data sensor = {};
-	uint32_t idx;
+	uint32_t data;
+	dht_res_t ret;
+	uint8_t temp;
+	uint8_t hum;
+	int sidx;
 
-	data[0] = (uint32_t)read_vcc();
-	data[1] = (uint32_t)read_temp_mcp9700();
+	sidx = *((int *)*arg);
+
+	switch (sidx) {
+	case 0:
+		data = (uint32_t)read_vcc();
+		break;
+	case 1:
+		data = (uint32_t)read_temp_mcp9700();
+		break;
+	case 2:
+		dht_power_up();
+		_delay_ms(1000);
+		ret = dht_read(DHT_TYPE_DHT11, &temp, NULL, NULL, NULL);
+		if (ret) {
+			printf("DHT read failure: %u\n", ret);
+			data = (uint32_t)ret;
+		} else {
+			data = (uint32_t)temp;
+		}
+
+		dht_power_down();
+		break;
+	case 3:
+		dht_power_up();
+		_delay_ms(1000);
+		ret = dht_read(DHT_TYPE_DHT11, NULL, NULL, &hum, NULL);
+		if (ret) {
+			printf("DHT read failure: %u\n", ret);
+			data = (uint32_t)ret;
+		} else {
+			data = (uint32_t)hum;
+		}
+
+		dht_power_down();
+		break;
+	default:
+		data = (uint32_t)0xeeee;
+		break;
+	}
 
 	/* encode  sensor_data */
+	printf("protobuf encoding: (%d, %lu)\n", sidx, data);
+	sensor.type = sidx;
+	sensor.data = data;
 
-	for (idx = 0; idx < PB_LIST_LEN; idx++) {
+	if (!pb_encode_tag_for_field(stream, field)) {
+		printf("protobuf tag encoding failed: %s\n", PB_GET_ERROR(stream));
+		return false;
+	}
 
-		printf("protobuf encoding: (%lu, %lu)\n", idx, data[idx]);
-
-		sensor.type = idx;
-		sensor.data = data[idx];
-
-		if (!pb_encode_tag_for_field(stream, field)) {
-			printf("protobuf tag encoding failed: %s\n", PB_GET_ERROR(stream));
-			return false;
-		}
-
-		if (!pb_encode_submessage(stream, sensor_data_fields, &sensor)) {
-			printf("protobuf submessage encoding failed: %s\n", PB_GET_ERROR(stream));
-			return false;
-		}
-	};
+	if (!pb_encode_submessage(stream, sensor_data_fields, &sensor)) {
+		printf("protobuf submessage encoding failed: %s\n", PB_GET_ERROR(stream));
+		return false;
+	}
 
 	return true;
 }
@@ -104,20 +147,12 @@ bool sensor_encode_callback(pb_ostream_t *stream, const pb_field_t *field, void 
 
 int main(void)
 {
-	struct rf24 *nrf;
-	enum rf24_tx_status ret;
-
-#if 1
-	uint8_t addr[] = {'E', 'F', 'C', 'L', 'I'};
+	uint8_t addr[] = { 0x45, 0x46, 0x43, 0x4c, 0x49 };
 	uint32_t node_id = 1001;
-#else
-	uint8_t addr[] = {'E', 'F', 'S', 'N', '1'};
-	uint32_t node_id = 1002;
-#endif
-
+	enum rf24_tx_status ret;
+	struct rf24 *nrf;
 	uint8_t buf[32];
-
-	unsigned int count = 0;
+	int sidx = 0;
 
 	node_sensor_list message = {};
 	pb_ostream_t stream;
@@ -150,7 +185,10 @@ int main(void)
 	rf24_start_ptx(nrf);
 
 	while (1) {
-		printf("send pkt #%u\n", ++count);
+		if (++sidx >= NUM_SENSORS)
+		       sidx = 0;
+
+		printf("send data for sensor #%u\n", sidx);
 		memset(buf, 0x0, sizeof(buf));
 		stream = pb_ostream_from_buffer(buf, sizeof(buf));
 
@@ -160,6 +198,9 @@ int main(void)
 		/* repeated message part */
 		message.sensor.funcs.encode = &sensor_encode_callback;
 
+		/* pass sensor index as opaque callback data */
+		message.sensor.arg = (void *)&sidx;
+
 		pb_status = pb_encode(&stream, node_sensor_list_fields, &message);
 		pb_len = stream.bytes_written;
 
@@ -168,7 +209,6 @@ int main(void)
 		} else {
 			printf("nanopb encoded %u bytes\n", pb_len);
 		}
-
 
 		ret = rf24_send(nrf, buf, pb_len);
 		if (ret != RF24_TX_OK) {
@@ -181,16 +221,20 @@ int main(void)
 
 		/* enable power-down mode */
 
+#if 1
 		adc_disable();
 		power_all_disable();
 
-		wdt_setup(WDTO_8S);
+		wdt_setup(WDTO_2S);
 		lpm_bod_off(SLEEP_MODE_PWR_DOWN);
 
 		power_usart0_enable();
 		power_adc_enable();
 		power_spi_enable();
 		adc_enable();
+#else
+		_delay_ms(1000);
+#endif
 
 		blink(0, 3, 500);
 	}
