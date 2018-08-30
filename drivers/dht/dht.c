@@ -35,7 +35,6 @@
 void dht_power_up()
 {
 	DHT_PWR_ENABLE();
-	_delay_ms(1000);
 }
 
 void dht_power_down()
