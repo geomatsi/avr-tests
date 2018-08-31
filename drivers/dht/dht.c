@@ -114,7 +114,7 @@ dht_res_t dht_read(dht_type_t type, uint8_t *t_int, uint8_t *t_dec, uint8_t *h_i
 	else
 		_delay_ms(18);
 
-	cli( );
+	cli();
 
 	/* turn pin into input and wait for acknowledgement */
 	DHT_PIN_INPUT();

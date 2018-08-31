@@ -1,2 +1,3 @@
 DHT11:
-D3 -> data pin
+D3 -> sensor data pin
+D5 -> sensor vcc pin (optional)

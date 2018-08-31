@@ -220,7 +220,6 @@ int main(void)
 		}
 
 		/* enable power-down mode */
-
 #if 1
 		adc_disable();
 		power_all_disable();

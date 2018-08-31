@@ -31,10 +31,11 @@
 		PORTD &= ~_BV(PD3);	\
 	} while (0)
 
-#define DHT_PIN_INPUT()		\
+#define DHT_PIN_INPUT()			\
 	do {				\
 		DDRD &= ~_BV(DDD3);	\
-		PORTD &= _BV(PD3);	\
+		/* pull-up */		\
+		PORTD |= _BV(PD3);	\
 	} while (0)
 
 #define DHT_GET_PIN_VALUE()	(PIND & _BV(PD3))
